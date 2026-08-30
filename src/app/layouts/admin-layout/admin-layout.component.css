@@ -1,0 +1,19 @@
+.admin-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-body {
+  display: flex;
+  flex: 1;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}

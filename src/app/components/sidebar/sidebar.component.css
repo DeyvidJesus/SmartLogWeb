@@ -1,0 +1,92 @@
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: #FFFFFF;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100vh - var(--header-height));
+  position: sticky;
+  top: var(--header-height);
+  padding: 20px 14px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-heading {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-input);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background-color: var(--surface-subtle);
+  color: var(--primary-dark);
+}
+
+.nav-item.active {
+  background-color: var(--accent-orange-light);
+  color: var(--accent-orange);
+  font-weight: 700;
+}
+
+.nav-icon {
+  font-size: 1.125rem;
+}
+
+.sidebar-footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.brand-footer-card {
+  padding: 12px 14px;
+  background-color: var(--bg-light);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.footer-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.footer-subtitle {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+}

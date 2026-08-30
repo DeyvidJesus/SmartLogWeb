@@ -1,0 +1,172 @@
+<div class="resource-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Clientes Corporativos</h1>
+      <p class="page-subtitle">Destinatários e parceiros comerciais cadastrados na operação</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="carregar()" [disabled]="isLoading()">
+        <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
+        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+      </button>
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Novo Cliente</button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="card toolbar-card">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" 
+             [(ngModel)]="termoBusca" 
+             name="termoBusca"
+             placeholder="Buscar por razão social, e-mail, telefone ou ID..." 
+             class="search-input" />
+      <button *ngIf="termoBusca" (click)="termoBusca = ''" class="clear-btn">✕</button>
+    </div>
+
+    <div class="chips-container">
+      <button class="chip-filter" [class.active]="filtroStatus === 'TODOS'" (click)="filtroStatus = 'TODOS'">
+        Todos <span class="chip-num">{{ getContador('TODOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'ATIVOS'" (click)="filtroStatus = 'ATIVOS'">
+        Ativos <span class="chip-num">{{ getContador('ATIVOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'INATIVOS'" (click)="filtroStatus = 'INATIVOS'">
+        Inativos <span class="chip-num">{{ getContador('INATIVOS') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="isLoading()">
+    <div class="spinner-lg"></div>
+    <p>Carregando clientes...</p>
+  </div>
+
+  <div class="cards-grid animate-fade-in" *ngIf="!isLoading() && clientesFiltrados.length > 0">
+    <div *ngFor="let c of clientesFiltrados" 
+         class="card cliente-card clickable-card"
+         (click)="abrirDetalhes(c)">
+      <div class="avatar-circle avatar-orange">
+        <span>🏢</span>
+      </div>
+      <div class="card-content">
+        <div class="card-title-row">
+          <h3 class="card-title">{{ c.nome }}</h3>
+          <span class="badge badge-entregue" *ngIf="c.ativo">
+            <span class="badge-dot"></span> ATIVO
+          </span>
+          <span class="badge badge-cancelada" *ngIf="!c.ativo">
+            <span class="badge-dot"></span> INATIVO
+          </span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">E-mail:</span>
+          <span class="meta-value">{{ c.email }}</span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">Telefone:</span>
+          <span class="meta-value">{{ c.telefone }}</span>
+        </div>
+      </div>
+      <div class="card-arrow">➔</div>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="!isLoading() && clientesFiltrados.length === 0">
+    <div class="empty-icon-lg">🏢</div>
+    <h3>Nenhum cliente encontrado</h3>
+    <div class="empty-actions">
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Cadastrar Cliente</button>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRAR CLIENTE -->
+  <div class="modal-overlay" *ngIf="showModalCriar" (click)="fecharModalCriar()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>🏢</span> Cadastrar Cliente Corporativo</h3>
+        <button class="modal-close-btn" (click)="fecharModalCriar()">×</button>
+      </div>
+
+      <form (ngSubmit)="salvarNovoCliente()" #formCli="ngForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Razão Social / Nome Fantasia *</label>
+            <input type="text" [(ngModel)]="novoCliente.nome" name="nome" required class="form-control" placeholder="Ex: Construtora Metropolitana S.A." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">E-mail Corporativo *</label>
+            <input type="email" [(ngModel)]="novoCliente.email" name="email" required class="form-control" placeholder="Ex: compras@metropolitana.com.br" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Telefone / WhatsApp *</label>
+            <input type="text" [(ngModel)]="novoCliente.telefone" name="telefone" required class="form-control" placeholder="Ex: (11) 98765-4321" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="fecharModalCriar()" [disabled]="isSubmitting()">Cancelar</button>
+          <button type="submit" class="btn btn-orange" [disabled]="isSubmitting() || !formCli.form.valid">
+            <span class="spinner" *ngIf="isSubmitting()"></span>
+            <span *ngIf="!isSubmitting()">Salvar Cliente</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DO CLIENTE -->
+  <div class="modal-overlay" *ngIf="showModalDetalhes && clienteSelecionado" (click)="fecharDetalhes()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>🏢</span> Detalhes do Cliente</h3>
+        <button class="modal-close-btn" (click)="fecharDetalhes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item full-span">
+            <span class="detail-label">RAZÃO SOCIAL / NOME</span>
+            <span class="detail-val" style="font-size: 1.0625rem;">{{ clienteSelecionado.nome }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">STATUS DA CONTA</span>
+            <div style="margin-top: 4px;">
+              <span class="badge badge-entregue">
+                <span class="badge-dot"></span> {{ clienteSelecionado.ativo ? 'ATIVO' : 'INATIVO' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">IDENTIFICADOR (ID)</span>
+            <span class="detail-val font-mono" style="font-size: 0.8125rem;">{{ clienteSelecionado.id }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">E-MAIL DE CONTATO</span>
+            <span class="detail-val">{{ clienteSelecionado.email }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">TELEFONE / WHATSAPP</span>
+            <span class="detail-val">{{ clienteSelecionado.telefone }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">DATA DE CADASTRO</span>
+            <span class="detail-val">{{ (clienteSelecionado.criadaEm | date:'dd/MM/yyyy HH:mm') || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="fecharDetalhes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

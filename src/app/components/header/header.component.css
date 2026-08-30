@@ -1,0 +1,128 @@
+.top-header {
+  height: var(--header-height);
+  background-color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-bottom: 2px solid var(--accent-orange);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.fallback-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--accent-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #FFFFFF;
+}
+
+.logo-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.brand-badge {
+  font-size: 0.625rem;
+  font-weight: 800;
+  background: rgba(255, 101, 0, 0.2);
+  color: #FF8533;
+  border: 1px solid rgba(255, 101, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tenant-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-chip);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #E2E8F0;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: var(--radius-chip);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--accent-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #94A3B8;
+}

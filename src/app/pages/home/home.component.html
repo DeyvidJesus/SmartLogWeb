@@ -1,0 +1,100 @@
+<div class="home-wrapper">
+  <!-- FULL SCREEN HERO BANNER (100vh) -->
+  <section class="hero-fullscreen">
+    <div class="hero-bg-overlay"></div>
+    
+    <!-- Hero Navigation Bar -->
+    <header class="hero-navbar">
+      <div class="brand">
+        <img src="/Smartlog.png" alt="SmartLog" class="brand-img" onerror="this.src='Smartlog.png';" />
+        <div class="brand-text">
+          <span class="title">SmartLog</span>
+          <span class="subtitle">Logística Inteligente</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a routerLink="/admin/dashboard" class="btn btn-orange">Acessar Painel ➔</a>
+      </div>
+    </header>
+
+    <!-- Hero Center Content -->
+    <div class="hero-center-content">
+      <div class="hero-chip">
+        <span>PLATAFORMA DE GESTÃO LOGÍSTICA</span>
+      </div>
+      <h1 class="hero-headline">
+        Controle total da sua operação em <span class="orange-text">tempo real</span>
+      </h1>
+      <p class="hero-subheadline">
+        Acompanhe entregas, monitore motoristas e otimize frotas logísticas com inteligência e alta performance operacional.
+      </p>
+
+      <div class="hero-actions">
+        <a routerLink="/admin/dashboard" class="btn btn-primary btn-lg">📊 Abrir Dashboard</a>
+        <a routerLink="/admin/entregas" class="btn btn-orange btn-lg">🚚 Gestão de Entregas</a>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <a href="#features-section" class="scroll-indicator" (click)="scrollToFeatures($event)">
+      <span>Rolar para ver mais</span>
+      <div class="scroll-arrow">↓</div>
+    </a>
+  </section>
+
+  <!-- SCROLLABLE CONTENT SECTION -->
+  <div id="features-section" class="home-content-container">
+    <!-- Features Grid -->
+    <section class="features-grid">
+      <div class="card feature-card">
+        <div class="feature-icon icon-blue">📊</div>
+        <h3>Dashboard Operacional</h3>
+        <p>Cálculo em tempo real de KPIs de entrega, taxas de conclusão e acompanhamento de frotas com precisão.</p>
+        <a routerLink="/admin/dashboard" class="feature-link">Ver Dashboard ➔</a>
+      </div>
+
+      <div class="card feature-card">
+        <div class="feature-icon icon-orange">🚚</div>
+        <h3>Gestão de Entregas</h3>
+        <p>Acompanhamento de encomendas com filtros rápidos por status e atualização imediata da frota.</p>
+        <a routerLink="/admin/entregas" class="feature-link">Gerenciar Entregas ➔</a>
+      </div>
+
+      <div class="card feature-card">
+        <div class="feature-icon icon-green">🗺️</div>
+        <h3>Rotas & Frotas</h3>
+        <p>Organização de rotas de distribuição e equipe de condutores cadastrados por empresa.</p>
+        <a routerLink="/admin/rotas" class="feature-link">Explorar Rotas ➔</a>
+      </div>
+    </section>
+
+    <!-- Quick Stats Section -->
+    <section class="card stats-card" *ngIf="metrics()">
+      <div class="stats-header">
+        <h2>Indicadores Atuais da Operação</h2>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value">{{ metrics()?.totalEntregas }}</div>
+          <div class="stat-label">Total de Entregas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value text-grey">{{ metrics()?.pendentes }}</div>
+          <div class="stat-label">Pendentes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value text-orange">{{ metrics()?.emTransito }}</div>
+          <div class="stat-label">Em Rota</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value text-green">{{ metrics()?.entregues }}</div>
+          <div class="stat-label">Entregues</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value text-blue">{{ metrics()?.taxaSucesso }}%</div>
+          <div class="stat-label">Taxa de Conclusão</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

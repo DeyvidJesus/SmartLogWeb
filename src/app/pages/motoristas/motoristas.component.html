@@ -1,0 +1,169 @@
+<div class="resource-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Equipe de Motoristas</h1>
+      <p class="page-subtitle">Gestão dos condutores e profissionais de entrega da frota</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="carregar()" [disabled]="isLoading()">
+        <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
+        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+      </button>
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Novo Motorista</button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="card toolbar-card">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" 
+             [(ngModel)]="termoBusca" 
+             name="termoBusca"
+             placeholder="Buscar por nome, e-mail ou ID..." 
+             class="search-input" />
+      <button *ngIf="termoBusca" (click)="termoBusca = ''" class="clear-btn">✕</button>
+    </div>
+
+    <div class="chips-container">
+      <button class="chip-filter" [class.active]="filtroStatus === 'TODOS'" (click)="filtroStatus = 'TODOS'">
+        Todos <span class="chip-num">{{ getContador('TODOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'ATIVOS'" (click)="filtroStatus = 'ATIVOS'">
+        Ativos <span class="chip-num">{{ getContador('ATIVOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'INATIVOS'" (click)="filtroStatus = 'INATIVOS'">
+        Inativos <span class="chip-num">{{ getContador('INATIVOS') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="isLoading()">
+    <div class="spinner-lg"></div>
+    <p>Carregando motoristas...</p>
+  </div>
+
+  <div class="cards-grid animate-fade-in" *ngIf="!isLoading() && motoristasFiltrados.length > 0">
+    <div *ngFor="let m of motoristasFiltrados" 
+         class="card motorista-card clickable-card"
+         (click)="abrirDetalhes(m)">
+      <div class="avatar-circle avatar-orange">
+        <span>👤</span>
+      </div>
+      <div class="card-content">
+        <div class="card-title-row">
+          <h3 class="card-title">{{ m.nome }}</h3>
+          <span class="badge" [class.badge-entregue]="m.ativo" [class.badge-cancelada]="!m.ativo">
+            <span class="badge-dot"></span> {{ m.ativo ? 'ATIVO' : 'INATIVO' }}
+          </span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">E-mail:</span>
+          <span class="meta-value">{{ m.email }}</span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">ID:</span>
+          <span class="font-mono" style="font-size: 0.75rem;">{{ m.id }}</span>
+        </div>
+      </div>
+      <div class="card-arrow">➔</div>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="!isLoading() && motoristasFiltrados.length === 0">
+    <div class="empty-icon-lg">🚚</div>
+    <h3>Nenhum motorista encontrado</h3>
+    <div class="empty-actions">
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Cadastrar Motorista</button>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRAR MOTORISTA -->
+  <div class="modal-overlay" *ngIf="showModalCriar" (click)="fecharModalCriar()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>👤</span> Cadastrar Motorista</h3>
+        <button class="modal-close-btn" (click)="fecharModalCriar()">×</button>
+      </div>
+
+      <form (ngSubmit)="salvarNovoMotorista()" #formMot="ngForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nome Completo *</label>
+            <input type="text" [(ngModel)]="novoMotorista.nome" name="nome" required class="form-control" placeholder="Ex: Roberto Alencar" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">E-mail de Acesso *</label>
+            <input type="email" [(ngModel)]="novoMotorista.email" name="email" required class="form-control" placeholder="Ex: roberto.alencar@smartlog.com.br" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">UID / Identificador</label>
+            <input type="text" [(ngModel)]="novoMotorista.uid" name="uid" class="form-control font-mono" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="fecharModalCriar()" [disabled]="isSubmitting()">Cancelar</button>
+          <button type="submit" class="btn btn-orange" [disabled]="isSubmitting() || !formMot.form.valid">
+            <span class="spinner" *ngIf="isSubmitting()"></span>
+            <span *ngIf="!isSubmitting()">Salvar Motorista</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DO MOTORISTA -->
+  <div class="modal-overlay" *ngIf="showModalDetalhes && motoristaSelecionado" (click)="fecharDetalhes()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>👤</span> Detalhes do Motorista</h3>
+        <button class="modal-close-btn" (click)="fecharDetalhes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item full-span">
+            <span class="detail-label">NOME COMPLETO</span>
+            <span class="detail-val" style="font-size: 1.0625rem;">{{ motoristaSelecionado.nome }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">STATUS CADASTRAL</span>
+            <div style="margin-top: 4px;">
+              <span class="badge" [class.badge-entregue]="motoristaSelecionado.ativo" [class.badge-cancelada]="!motoristaSelecionado.ativo">
+                <span class="badge-dot"></span> {{ motoristaSelecionado.ativo ? 'ATIVO' : 'INATIVO' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">IDENTIFICADOR (ID)</span>
+            <span class="detail-val font-mono" style="font-size: 0.8125rem;">{{ motoristaSelecionado.id }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">E-MAIL DE CONTATO</span>
+            <span class="detail-val">{{ motoristaSelecionado.email }}</span>
+          </div>
+
+          <div class="detail-item" *ngIf="motoristaSelecionado.uid">
+            <span class="detail-label">UID DE ACESSO</span>
+            <span class="detail-val font-mono" style="font-size: 0.8125rem;">{{ motoristaSelecionado.uid }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">DATA DE CADASTRO</span>
+            <span class="detail-val">{{ (motoristaSelecionado.criadaEm | date:'dd/MM/yyyy HH:mm') || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="fecharDetalhes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

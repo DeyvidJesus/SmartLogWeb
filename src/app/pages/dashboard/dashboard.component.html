@@ -1,0 +1,261 @@
+<div class="dashboard-page">
+  <!-- Header da Torre de Controle -->
+  <div class="page-header">
+    <div>
+      <div class="control-tower-badge">TORRE DE CONTROLE ENTERPRISE</div>
+      <h1 class="page-title">Painel Operacional & Telemetria</h1>
+      <p class="page-subtitle">Monitoramento em tempo real de frotas, entregas e cumprimento de SLA</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="carregarDados()" [disabled]="isLoading()">
+        <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
+        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+      </button>
+      <a routerLink="/admin/entregas" class="btn btn-orange">+ Nova Entrega</a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="card loading-card" *ngIf="isLoading()">
+    <div class="spinner-lg"></div>
+    <p>Carregando telemetria e indicadores operacionais...</p>
+  </div>
+
+  <!-- Metrics Grid (Enterprise Supply Chain KPIs) -->
+  <div class="metrics-grid" *ngIf="!isLoading() && metrics()">
+    <div class="kpi-card card">
+      <div class="kpi-icon icon-blue">📦</div>
+      <div class="kpi-value">{{ metrics()?.totalEntregas }}</div>
+      <div class="kpi-label">Total de Entregas</div>
+      <div class="kpi-sub">Carga Total: <strong>{{ metrics()?.toneladasDespachadas }} ton</strong></div>
+    </div>
+
+    <div class="kpi-card card">
+      <div class="kpi-icon icon-orange">🚚</div>
+      <div class="kpi-value text-orange">{{ metrics()?.totalVeiculos }}</div>
+      <div class="kpi-label">Frotas / Veículos Ativos</div>
+      <div class="kpi-sub">Ocupação Média: <strong>{{ metrics()?.taxaOcupacaoFrota }}%</strong></div>
+    </div>
+
+    <div class="kpi-card card">
+      <div class="kpi-icon icon-green">🎯</div>
+      <div class="kpi-value text-green">{{ metrics()?.otifPercentual }}%</div>
+      <div class="kpi-label">Índice OTIF (On-Time In-Full)</div>
+      <div class="kpi-sub">SLA Cumprido: <strong>{{ metrics()?.slaCumprimentoPercentual }}%</strong></div>
+    </div>
+
+    <div class="kpi-card card">
+      <div class="kpi-icon icon-purple">👥</div>
+      <div class="kpi-value">{{ metrics()?.totalClientes }}</div>
+      <div class="kpi-label">Clientes Parceiros</div>
+      <div class="kpi-sub">Rotas Operando: <strong>{{ metrics()?.totalRotas }}</strong></div>
+    </div>
+  </div>
+
+  <!-- TORRE DE CONTROLE: MAPA AO VIVO + CENTRAL DE ALERTAS CRÍTICOS -->
+  <div class="control-tower-grid" *ngIf="!isLoading()">
+    <!-- MAPA AO VIVO (Leaflet) -->
+    <div class="card map-card">
+      <div class="map-card-header">
+        <div class="map-title-wrap">
+          <span class="pulse-dot"></span>
+          <h2 class="map-title">Mapa de Telemetria & Frotas em Tempo Real</h2>
+        </div>
+        <span class="live-pill">AO VIVO</span>
+      </div>
+      <div id="operational-map" class="map-container"></div>
+    </div>
+
+    <!-- CENTRAL DE ALERTAS OPERACIONAIS -->
+    <div class="card alerts-panel-card">
+      <div class="alerts-header">
+        <h3 class="alerts-title">🚨 Alertas da Operação</h3>
+        <span class="alert-count-tag">{{ metrics()?.alertas?.length || 0 }} ativos</span>
+      </div>
+
+      <div class="alerts-list">
+        <div *ngFor="let alerta of metrics()?.alertas" 
+             class="alert-item" 
+             [class.alert-critico]="alerta.tipo === 'CRITICO'"
+             [class.alert-aviso]="alerta.tipo === 'ALERTA'"
+             [class.alert-info]="alerta.tipo === 'INFO'">
+          <div class="alert-top">
+            <span class="alert-item-title">{{ alerta.titulo }}</span>
+            <span class="alert-time">{{ alerta.tempo }}</span>
+          </div>
+          <p class="alert-item-desc">{{ alerta.descricao }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Breakdown -->
+  <div class="status-summary-grid" *ngIf="!isLoading() && metrics()">
+    <div class="card status-box">
+      <div class="status-box-header">
+        <span class="status-dot dot-grey"></span>
+        <span class="status-name">Pendentes</span>
+      </div>
+      <div class="status-box-val">{{ metrics()?.pendentes }}</div>
+      <div class="status-box-bar">
+        <div class="progress-bar bar-grey" [style.width.%]="getPercentual(metrics()?.pendentes || 0, metrics()?.totalEntregas || 1)"></div>
+      </div>
+    </div>
+
+    <div class="card status-box">
+      <div class="status-box-header">
+        <span class="status-dot dot-orange"></span>
+        <span class="status-name">Em Rota</span>
+      </div>
+      <div class="status-box-val text-orange">{{ metrics()?.emTransito }}</div>
+      <div class="status-box-bar">
+        <div class="progress-bar bar-orange" [style.width.%]="getPercentual(metrics()?.emTransito || 0, metrics()?.totalEntregas || 1)"></div>
+      </div>
+    </div>
+
+    <div class="card status-box">
+      <div class="status-box-header">
+        <span class="status-dot dot-green"></span>
+        <span class="status-name">Entregues</span>
+      </div>
+      <div class="status-box-val text-green">{{ metrics()?.entregues }}</div>
+      <div class="status-box-bar">
+        <div class="progress-bar bar-green" [style.width.%]="getPercentual(metrics()?.entregues || 0, metrics()?.totalEntregas || 1)"></div>
+      </div>
+    </div>
+
+    <div class="card status-box">
+      <div class="status-box-header">
+        <span class="status-dot dot-blue"></span>
+        <span class="status-name">Taxa de Conclusão</span>
+      </div>
+      <div class="status-box-val text-blue">{{ metrics()?.taxaSucesso }}%</div>
+      <div class="status-box-bar">
+        <div class="progress-bar bar-blue" [style.width.%]="metrics()?.taxaSucesso || 0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Deliveries Section (Clickable rows) -->
+  <div class="card recent-deliveries-card" *ngIf="!isLoading()">
+    <div class="section-card-header">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Últimas Entregas Atualizadas</h2>
+        <span class="section-badge">{{ entregasRecentes().length }} registros</span>
+      </div>
+      <a routerLink="/admin/entregas" class="btn btn-secondary btn-sm">Ver Todas ➔</a>
+    </div>
+
+    <div class="table-responsive" *ngIf="entregasRecentes().length > 0">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>CÓDIGO</th>
+            <th>ORIGEM</th>
+            <th>DESTINO</th>
+            <th>STATUS</th>
+            <th>DATA</th>
+            <th style="text-align: right;">AÇÃO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of entregasRecentes()" 
+              class="table-row clickable-row" 
+              (click)="abrirModalDetalhes(e)"
+              title="Clique para ver detalhes completos da entrega">
+            <td class="font-mono font-bold">{{ e.codigo }}</td>
+            <td>{{ e.origem }}</td>
+            <td>{{ e.destino }}</td>
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(e.status)">
+                <span class="badge-dot"></span>
+                {{ getStatusLabel(e.status) }}
+              </span>
+            </td>
+            <td class="text-dim">{{ e.atualizadaEm | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td style="text-align: right;" (click)="$event.stopPropagation()">
+              <button class="btn btn-outline btn-xs" (click)="abrirModalDetalhes(e)">
+                👁 Detalhes
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL DETALHES DA ENTREGA -->
+  <div class="modal-overlay" *ngIf="showModalDetalhes && entregaSelecionada" (click)="fecharModalDetalhes()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <span>📋</span> Detalhes da Entrega
+        </h3>
+        <button class="modal-close-btn" (click)="fecharModalDetalhes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">CÓDIGO DE RASTREIO</span>
+            <span class="detail-val font-mono">{{ entregaSelecionada.codigo }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">STATUS ATUAL</span>
+            <div style="margin-top: 4px;">
+              <span class="badge" [ngClass]="getStatusClass(entregaSelecionada.status)">
+                <span class="badge-dot"></span>
+                {{ getStatusLabel(entregaSelecionada.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">IDENTIFICADOR (ID)</span>
+            <span class="detail-val" style="font-size: 0.8125rem;">{{ entregaSelecionada.id }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">EMPRESA / TENANT</span>
+            <span class="detail-val">{{ entregaSelecionada.empresaId || 'empresa-001' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">CLIENTE ASSOCIADO</span>
+            <span class="detail-val">{{ entregaSelecionada.clienteId }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">ROTA DEFINIDA</span>
+            <span class="detail-val">{{ entregaSelecionada.rotaId }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">ENDEREÇO DE ORIGEM</span>
+            <span class="detail-val">{{ entregaSelecionada.origem }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">ENDEREÇO DE DESTINO</span>
+            <span class="detail-val">{{ entregaSelecionada.destino }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">DATA DE CRIAÇÃO</span>
+            <span class="detail-val">{{ entregaSelecionada.criadaEm | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">ÚLTIMA ATUALIZAÇÃO</span>
+            <span class="detail-val">{{ entregaSelecionada.atualizadaEm | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="fecharModalDetalhes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

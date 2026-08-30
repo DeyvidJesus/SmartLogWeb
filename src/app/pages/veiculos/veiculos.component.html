@@ -1,0 +1,212 @@
+<div class="resource-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gestão de Frotas & Veículos</h1>
+      <p class="page-subtitle">Controle de caminhões, capacidade de carga e disponibilidade operacional</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="carregar()" [disabled]="isLoading()">
+        <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
+        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+      </button>
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Novo Veículo</button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="card toolbar-card">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" 
+             [(ngModel)]="termoBusca" 
+             name="termoBusca"
+             placeholder="Buscar por placa, modelo ou ID..." 
+             class="search-input" />
+      <button *ngIf="termoBusca" (click)="termoBusca = ''" class="clear-btn">✕</button>
+    </div>
+
+    <div class="chips-container">
+      <button class="chip-filter" [class.active]="filtroTipo === 'TODOS'" (click)="filtroTipo = 'TODOS'">
+        Todos <span class="chip-num">{{ getContador('TODOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroTipo === 'VUC'" (click)="filtroTipo = 'VUC'">
+        VUC <span class="chip-num">{{ getContador('VUC') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroTipo === 'TOCO'" (click)="filtroTipo = 'TOCO'">
+        Toco <span class="chip-num">{{ getContador('TOCO') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroTipo === 'TRUCK'" (click)="filtroTipo = 'TRUCK'">
+        Truck <span class="chip-num">{{ getContador('TRUCK') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroTipo === 'VAN'" (click)="filtroTipo = 'VAN'">
+        Van <span class="chip-num">{{ getContador('VAN') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="isLoading()">
+    <div class="spinner-lg"></div>
+    <p>Carregando veículos da frota...</p>
+  </div>
+
+  <div class="cards-grid animate-fade-in" *ngIf="!isLoading() && veiculosFiltrados.length > 0">
+    <div *ngFor="let v of veiculosFiltrados" 
+         class="card veiculo-card clickable-card"
+         (click)="abrirDetalhes(v)">
+      <div class="avatar-circle avatar-orange">
+        <span>🚛</span>
+      </div>
+      <div class="card-content">
+        <div class="card-title-row">
+          <h3 class="card-title">{{ v.modelo }}</h3>
+          <span class="badge badge-entregue" *ngIf="v.ativo">
+            <span class="badge-dot"></span> ATIVO
+          </span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">Placa:</span>
+          <span class="font-mono font-bold">{{ v.placa }}</span>
+          <span class="type-tag">{{ v.tipo }}</span>
+        </div>
+        <div class="capacity-pills">
+          <span class="cap-pill">⚖️ {{ v.capacidadeKg | number }} kg</span>
+          <span class="cap-pill">📦 {{ v.capacidadeM3 }} m³</span>
+          <span class="cap-pill">📅 Ano {{ v.ano }}</span>
+        </div>
+      </div>
+      <div class="card-arrow">➔</div>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="!isLoading() && veiculosFiltrados.length === 0">
+    <div class="empty-icon-lg">🚛</div>
+    <h3>Nenhum veículo encontrado</h3>
+    <p *ngIf="termoBusca || filtroTipo !== 'TODOS'">Ajuste os filtros ou o termo de busca.</p>
+  </div>
+
+  <!-- MODAL: CADASTRAR NOVO VEÍCULO -->
+  <div class="modal-overlay" *ngIf="showModalCriar" (click)="fecharModalCriar()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <span>🚛</span> Cadastrar Veículo na Frota
+        </h3>
+        <button class="modal-close-btn" (click)="fecharModalCriar()">×</button>
+      </div>
+
+      <form (ngSubmit)="salvarNovoVeiculo()" #formVeic="ngForm">
+        <div class="modal-body">
+          <p class="modal-desc">Cadastre um caminhão ou veículo utilitário para alocação nas rotas de distribuição.</p>
+
+          <div class="form-group">
+            <label class="form-label">Placa do Veículo *</label>
+            <input type="text" [(ngModel)]="novoVeiculo.placa" name="placa" required class="form-control font-mono" placeholder="Ex: BRA2E19" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Modelo / Descrição *</label>
+            <input type="text" [(ngModel)]="novoVeiculo.modelo" name="modelo" required class="form-control" placeholder="Ex: Mercedes-Benz Accelo 1016" />
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Categoria / Tipo *</label>
+              <select [(ngModel)]="novoVeiculo.tipo" name="tipo" class="form-control">
+                <option value="VUC">VUC (Veículo Urbano de Carga)</option>
+                <option value="TOCO">Toco (Médio Porte)</option>
+                <option value="TRUCK">Truck Pesado</option>
+                <option value="VAN">Van / Furgão Express</option>
+                <option value="CARRETA">Carreta Pesada</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Ano de Fabricação *</label>
+              <input type="number" [(ngModel)]="novoVeiculo.ano" name="ano" required class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Capacidade de Carga (kg) *</label>
+              <input type="number" [(ngModel)]="novoVeiculo.capacidadeKg" name="capacidadeKg" required class="form-control" placeholder="Ex: 5000" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cubagem Máxima (m³) *</label>
+              <input type="number" [(ngModel)]="novoVeiculo.capacidadeM3" name="capacidadeM3" required class="form-control" placeholder="Ex: 24" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="fecharModalCriar()" [disabled]="isSubmitting()">Cancelar</button>
+          <button type="submit" class="btn btn-orange" [disabled]="isSubmitting() || !formVeic.form.valid">
+            <span class="spinner" *ngIf="isSubmitting()"></span>
+            <span *ngIf="!isSubmitting()">Salvar Veículo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DO VEÍCULO -->
+  <div class="modal-overlay" *ngIf="showModalDetalhes && veiculoSelecionado" (click)="fecharDetalhes()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <span>🚛</span> Detalhes do Veículo
+        </h3>
+        <button class="modal-close-btn" (click)="fecharDetalhes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item full-span">
+            <span class="detail-label">MODELO DO CAMINHÃO</span>
+            <span class="detail-val" style="font-size: 1.125rem;">{{ veiculoSelecionado.modelo }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">PLACA DO VEÍCULO</span>
+            <span class="detail-val font-mono">{{ veiculoSelecionado.placa }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">CATEGORIA</span>
+            <span class="detail-val">{{ veiculoSelecionado.tipo }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">CAPACIDADE DE CARGA</span>
+            <span class="detail-val font-bold text-orange">{{ veiculoSelecionado.capacidadeKg | number }} kg</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">CAPACIDADE VOLUMÉTRICA</span>
+            <span class="detail-val font-bold text-blue">{{ veiculoSelecionado.capacidadeM3 }} m³</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">ANO</span>
+            <span class="detail-val">{{ veiculoSelecionado.ano }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">STATUS OPERACIONAL</span>
+            <span class="badge badge-entregue">{{ veiculoSelecionado.ativo ? 'ATIVO' : 'INATIVO' }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">IDENTIFICADOR DO SISTEMA</span>
+            <span class="detail-val font-mono" style="font-size: 0.8125rem;">{{ veiculoSelecionado.id }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="fecharDetalhes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

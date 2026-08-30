@@ -1,0 +1,166 @@
+<div class="resource-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Rotas de Entrega</h1>
+      <p class="page-subtitle">Planejamento e acompanhamento de rotas logísticas da frota</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="carregarRotas()" [disabled]="isLoading()">
+        <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
+        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+      </button>
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Nova Rota</button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="card toolbar-card">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" 
+             [(ngModel)]="termoBusca" 
+             name="termoBusca"
+             placeholder="Buscar por nome da rota, motorista ou ID..." 
+             class="search-input" />
+      <button *ngIf="termoBusca" (click)="termoBusca = ''" class="clear-btn">✕</button>
+    </div>
+
+    <div class="chips-container">
+      <button class="chip-filter" [class.active]="filtroStatus === 'TODAS'" (click)="filtroStatus = 'TODAS'">
+        Todas <span class="chip-num">{{ getContador('TODOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'EM_ANDAMENTO'" (click)="filtroStatus = 'EM_ANDAMENTO'">
+        Em Andamento <span class="chip-num">{{ getContador('EM_ANDAMENTO') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'PLANEJADA'" (click)="filtroStatus = 'PLANEJADA'">
+        Planejadas <span class="chip-num">{{ getContador('PLANEJADA') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="isLoading()">
+    <div class="spinner-lg"></div>
+    <p>Carregando rotas...</p>
+  </div>
+
+  <div class="cards-grid animate-fade-in" *ngIf="!isLoading() && rotasFiltradas.length > 0">
+    <div *ngFor="let rota of rotasFiltradas" 
+         class="card rota-card clickable-card"
+         (click)="abrirDetalhes(rota)">
+      <div class="avatar-circle avatar-orange">
+        <span>🗺️</span>
+      </div>
+      <div class="card-content">
+        <div class="card-title-row">
+          <h3 class="card-title">{{ rota.nome }}</h3>
+          <span class="badge badge-transito">
+            <span class="badge-dot"></span> {{ rota.status || 'EM_ANDAMENTO' }}
+          </span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">Motorista:</span>
+          <span class="meta-value">{{ rota.motoristaId || 'Não atribuído' }}</span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-label">ID da Rota:</span>
+          <span class="font-mono" style="font-size: 0.75rem;">{{ rota.id }}</span>
+        </div>
+      </div>
+      <div class="card-arrow">➔</div>
+    </div>
+  </div>
+
+  <div class="card state-card" *ngIf="!isLoading() && rotasFiltradas.length === 0">
+    <div class="empty-icon-lg">🗺️</div>
+    <h3>Nenhuma rota encontrada</h3>
+    <div class="empty-actions">
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Criar Rota</button>
+    </div>
+  </div>
+
+  <!-- MODAL: CRIAR ROTA -->
+  <div class="modal-overlay" *ngIf="showModalCriar" (click)="fecharModalCriar()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>🗺️</span> Cadastrar Nova Rota</h3>
+        <button class="modal-close-btn" (click)="fecharModalCriar()">×</button>
+      </div>
+
+      <form (ngSubmit)="salvarNovaRota()" #formRota="ngForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nome da Rota *</label>
+            <input type="text" [(ngModel)]="novaRota.nome" name="nome" required class="form-control" placeholder="Ex: Rota Zona Sul & Santo Amaro" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Motorista Responsável</label>
+            <select [(ngModel)]="novaRota.motoristaId" name="motoristaId" class="form-control">
+              <option value="">Nenhum motorista associado</option>
+              <option *ngFor="let m of motoristas()" [value]="m.id">{{ m.nome }} ({{ m.email }})</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status Inicial</label>
+            <select [(ngModel)]="novaRota.status" name="status" class="form-control">
+              <option value="PLANEJADA">PLANEJADA</option>
+              <option value="EM_ANDAMENTO">EM_ANDAMENTO</option>
+              <option value="CONCLUIDA">CONCLUIDA</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="fecharModalCriar()" [disabled]="isSubmitting()">Cancelar</button>
+          <button type="submit" class="btn btn-orange" [disabled]="isSubmitting() || !formRota.form.valid">
+            <span class="spinner" *ngIf="isSubmitting()"></span>
+            <span *ngIf="!isSubmitting()">Salvar Rota</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DA ROTA -->
+  <div class="modal-overlay" *ngIf="showModalDetalhes && rotaSelecionada" (click)="fecharDetalhes()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>🗺️</span> Detalhes da Rota</h3>
+        <button class="modal-close-btn" (click)="fecharDetalhes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item full-span">
+            <span class="detail-label">NOME DA ROTA</span>
+            <span class="detail-val" style="font-size: 1.0625rem;">{{ rotaSelecionada.nome }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">STATUS OPERACIONAL</span>
+            <div style="margin-top: 4px;">
+              <span class="badge badge-transito">
+                <span class="badge-dot"></span> {{ rotaSelecionada.status || 'PLANEJADA' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">MOTORISTA ASSOCIADO</span>
+            <span class="detail-val">{{ rotaSelecionada.motoristaId || 'Nenhum motorista associado' }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">IDENTIFICADOR (ID)</span>
+            <span class="detail-val font-mono" style="font-size: 0.8125rem;">{{ rotaSelecionada.id }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="fecharDetalhes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

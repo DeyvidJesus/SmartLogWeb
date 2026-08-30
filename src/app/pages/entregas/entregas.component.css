@@ -1,0 +1,12 @@
+.entregas-page { display: flex; flex-direction: column; gap: 20px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.cargo-panel { background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-top: 6px; }
+.cargo-title { font-size: 0.6875rem; font-weight: 800; color: var(--accent-orange); letter-spacing: 0.06em; margin-bottom: 10px; }
+.table-card { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.table-header-info { font-size: 0.8125rem; color: var(--text-dim); }
+.state-card { padding: 60px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
+.empty-icon-lg { font-size: 3rem; }
+.status-summary-card { background-color: var(--bg-light); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; }
+.summary-line { display: flex; align-items: center; justify-content: space-between; }
+.summary-label { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); }

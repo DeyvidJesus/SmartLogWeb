@@ -1,0 +1,317 @@
+<div class="entregas-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gestão de Entregas</h1>
+      <p class="page-subtitle">Acompanhe e gerencie as encomendas da operação em tempo real</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="carregarEntregas()" [disabled]="isLoading()">
+        <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
+        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+      </button>
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Nova Entrega</button>
+    </div>
+  </div>
+
+  <!-- Toolbar & Filters -->
+  <div class="card toolbar-card">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" 
+             [(ngModel)]="termoBusca" 
+             name="termoBusca"
+             placeholder="Buscar por código, destino, cliente ou rota..." 
+             class="search-input" />
+      <button *ngIf="termoBusca" (click)="termoBusca = ''" class="clear-btn">✕</button>
+    </div>
+
+    <div class="chips-container">
+      <button class="chip-filter" [class.active]="filtroStatus === 'TODOS'" (click)="filtroStatus = 'TODOS'">
+        Todas <span class="chip-num">{{ getContador('TODOS') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'PENDENTE'" (click)="filtroStatus = 'PENDENTE'">
+        Pendentes <span class="chip-num">{{ getContador('PENDENTE') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'EM_ROTA'" (click)="filtroStatus = 'EM_ROTA'">
+        Em Rota <span class="chip-num">{{ getContador('EM_ROTA') }}</span>
+      </button>
+      <button class="chip-filter" [class.active]="filtroStatus === 'ENTREGUE'" (click)="filtroStatus = 'ENTREGUE'">
+        Entregues <span class="chip-num">{{ getContador('ENTREGUE') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="card state-card" *ngIf="isLoading()">
+    <div class="spinner-lg"></div>
+    <p>Buscando lista de entregas...</p>
+  </div>
+
+  <!-- Deliveries Table -->
+  <div class="card table-card animate-fade-in" *ngIf="!isLoading() && !errorMessage() && entregasFiltradas.length > 0">
+    <div class="table-header-info">
+      <span>Exibindo <strong>{{ entregasFiltradas.length }}</strong> de <strong>{{ entregas().length }}</strong> entregas</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>CÓDIGO</th>
+            <th>CLIENTE / DESTINATÁRIO</th>
+            <th>ORIGEM</th>
+            <th>DESTINO</th>
+            <th>ROTA</th>
+            <th>STATUS</th>
+            <th>DATA</th>
+            <th style="text-align: right;">AÇÕES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entrega of entregasFiltradas" class="table-row clickable-row" (click)="abrirModalDetalhes(entrega)">
+            <td class="font-mono font-bold">{{ entrega.codigo }}</td>
+            <td class="font-bold">{{ getNomeCliente(entrega.clienteId) }}</td>
+            <td class="font-medium text-muted">{{ entrega.origem }}</td>
+            <td class="font-medium">{{ entrega.destino }}</td>
+            <td><span class="id-tag">{{ getNomeRota(entrega.rotaId) }}</span></td>
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(entrega.status)">
+                <span class="badge-dot"></span>
+                {{ getStatusLabel(entrega.status) }}
+              </span>
+            </td>
+            <td class="text-dim">{{ entrega.criadaEm | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td style="text-align: right;" (click)="$event.stopPropagation()">
+              <div class="action-buttons">
+                <button class="btn btn-secondary btn-xs" (click)="abrirModalStatus(entrega)">
+                  ⚡ Alterar Status
+                </button>
+                <button class="btn btn-outline btn-xs" (click)="abrirModalDetalhes(entrega)">
+                  👁 Detalhes
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="card state-card animate-fade-in" *ngIf="!isLoading() && !errorMessage() && entregasFiltradas.length === 0">
+    <div class="empty-icon-lg">📦</div>
+    <h3>Nenhuma entrega encontrada</h3>
+    <div class="empty-actions">
+      <button class="btn btn-orange" (click)="abrirModalCriar()">+ Cadastrar Entrega</button>
+    </div>
+  </div>
+
+  <!-- MODAL INTELIGENTE: NOVA ENTREGA COM AUTOCOMPLETE E CEP -->
+  <div class="modal-overlay" *ngIf="showModalCriar" (click)="fecharModalCriar()">
+    <div class="modal-dialog" style="max-width: 640px;" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <span>📦</span> Nova Ordem de Entrega (Smart Res)
+        </h3>
+        <button class="modal-close-btn" (click)="fecharModalCriar()">×</button>
+      </div>
+
+      <form (ngSubmit)="salvarNovaEntrega()" #formCriar="ngForm">
+        <div class="modal-body">
+          <p class="modal-desc">Selecione o cliente para autopreenchimento de rota e endereço ou consulte o CEP.</p>
+
+          <!-- 1. Cliente Selector (Autocomplete / Select) -->
+          <div class="form-group">
+            <label class="form-label">Cliente / Destinatário *</label>
+            <select [(ngModel)]="novaEntrega.clienteId" 
+                    name="clienteId" 
+                    required 
+                    class="form-control"
+                    (change)="onClienteSelecionado(novaEntrega.clienteId)">
+              <option *ngFor="let c of clientes()" [value]="c.id">
+                🏢 {{ c.nome }} ({{ c.email }})
+              </option>
+            </select>
+          </div>
+
+          <!-- 2. CEP Lookup Bar -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">CEP de Destino</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" [(ngModel)]="cepBusca" name="cepBusca" class="form-control font-mono" placeholder="00000-000" />
+                <button type="button" class="btn btn-secondary btn-sm" (click)="buscarCep()" [disabled]="isBuscandoCep">
+                  <span class="spinner spinner-dark" *ngIf="isBuscandoCep"></span>
+                  <span *ngIf="!isBuscandoCep">Buscar</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Rota Selector -->
+            <div class="form-group">
+              <label class="form-label">Rota de Distribuição *</label>
+              <select [(ngModel)]="novaEntrega.rotaId" name="rotaId" required class="form-control">
+                <option *ngFor="let r of rotas()" [value]="r.id">
+                  🗺️ {{ r.nome }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 3. Endereço de Destino -->
+          <div class="form-group">
+            <label class="form-label">Endereço de Destino Completo *</label>
+            <input type="text" [(ngModel)]="novaEntrega.destino" name="destino" required class="form-control" placeholder="Av. Paulista, 1000 - Bela Vista - São Paulo, SP" />
+          </div>
+
+          <!-- 4. Centro de Distribuição (Origem) -->
+          <div class="form-group">
+            <label class="form-label">Centro de Distribuição (Origem) *</label>
+            <input type="text" [(ngModel)]="novaEntrega.origem" name="origem" required class="form-control" />
+          </div>
+
+          <!-- 5. Dados da Carga / NF-e -->
+          <div class="cargo-panel">
+            <div class="cargo-title">📦 DADOS DA CARGA & NOTA FISCAL</div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label class="form-label">Volumes</label>
+                <input type="number" [(ngModel)]="novaEntrega.volumes" name="volumes" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Peso Total (kg)</label>
+                <input type="number" [(ngModel)]="novaEntrega.pesoKg" name="pesoKg" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valor NF-e (R$)</label>
+                <input type="number" [(ngModel)]="novaEntrega.valorNfe" name="valorNfe" class="form-control" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="fecharModalCriar()" [disabled]="isSubmitting()">Cancelar</button>
+          <button type="submit" class="btn btn-orange" [disabled]="isSubmitting() || !formCriar.form.valid">
+            <span class="spinner" *ngIf="isSubmitting()"></span>
+            <span *ngIf="!isSubmitting()">Salvar Ordem de Entrega</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ATUALIZAR STATUS -->
+  <div class="modal-overlay" *ngIf="showModalStatus && entregaSelecionada" (click)="fecharModalStatus()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>⚡</span> Alterar Status da Entrega</h3>
+        <button class="modal-close-btn" (click)="fecharModalStatus()">×</button>
+      </div>
+
+      <form (ngSubmit)="salvarNovoStatus()">
+        <div class="modal-body">
+          <div class="status-summary-card">
+            <div class="summary-line">
+              <span class="summary-label">CÓDIGO:</span>
+              <span class="font-mono font-bold">{{ entregaSelecionada.codigo }}</span>
+            </div>
+            <div class="summary-line">
+              <span class="summary-label">STATUS ATUAL:</span>
+              <span class="badge" [ngClass]="getStatusClass(entregaSelecionada.status)">
+                <span class="badge-dot"></span>
+                {{ getStatusLabel(entregaSelecionada.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label class="form-label">Novo Status Operacional *</label>
+            <select [(ngModel)]="novoStatus" name="novoStatus" class="form-control">
+              <option value="PENDENTE">⏳ Pendente (Aguardando Despacho)</option>
+              <option value="EM_ROTA">🚚 Em Rota (Em Deslocamento)</option>
+              <option value="ENTREGUE">✅ Entregue (Concluída)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="fecharModalStatus()" [disabled]="isSubmitting()">Cancelar</button>
+          <button type="submit" class="btn btn-orange" [disabled]="isSubmitting()">
+            <span class="spinner" *ngIf="isSubmitting()"></span>
+            <span *ngIf="!isSubmitting()">Confirmar Alteração</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DA ENTREGA -->
+  <div class="modal-overlay" *ngIf="showModalDetalhes && entregaSelecionada" (click)="fecharModalDetalhes()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>📋</span> Detalhes da Entrega</h3>
+        <button class="modal-close-btn" (click)="fecharModalDetalhes()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">CÓDIGO DE RASTREIO</span>
+            <span class="detail-val font-mono">{{ entregaSelecionada.codigo }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">STATUS ATUAL</span>
+            <div style="margin-top: 4px;">
+              <span class="badge" [ngClass]="getStatusClass(entregaSelecionada.status)">
+                <span class="badge-dot"></span>
+                {{ getStatusLabel(entregaSelecionada.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">CLIENTE DESTINATÁRIO</span>
+            <span class="detail-val font-bold">{{ getNomeCliente(entregaSelecionada.clienteId) }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">ROTA DE DISTRIBUIÇÃO</span>
+            <span class="detail-val">{{ getNomeRota(entregaSelecionada.rotaId) }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">EMPRESA / TENANT</span>
+            <span class="detail-val">{{ entregaSelecionada.empresaId || 'empresa-001' }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">ENDEREÇO DE ORIGEM</span>
+            <span class="detail-val">{{ entregaSelecionada.origem }}</span>
+          </div>
+
+          <div class="detail-item full-span">
+            <span class="detail-label">ENDEREÇO DE DESTINO</span>
+            <span class="detail-val">{{ entregaSelecionada.destino }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">DATA DE CRIAÇÃO</span>
+            <span class="detail-val">{{ entregaSelecionada.criadaEm | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">ÚLTIMA ATUALIZAÇÃO</span>
+            <span class="detail-val">{{ entregaSelecionada.atualizadaEm | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="fecharModalDetalhes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

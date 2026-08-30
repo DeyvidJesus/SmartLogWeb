@@ -1,0 +1,64 @@
+<aside class="sidebar">
+  <div class="sidebar-menu">
+    <div class="menu-section">
+      <div class="section-heading">TORRE DE CONTROLE</div>
+      <ul class="nav-list">
+        <li>
+          <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Visão Geral</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Dashboard & Mapa</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-section">
+      <div class="section-heading">OPERAÇÕES DE LOGÍSTICA</div>
+      <ul class="nav-list">
+        <li>
+          <a routerLink="/admin/entregas" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">🚚</span>
+            <span class="nav-label">Entregas</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/veiculos" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">🚛</span>
+            <span class="nav-label">Frotas & Veículos</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/rotas" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Rotas</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/motoristas" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Motoristas</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/clientes" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">🏢</span>
+            <span class="nav-label">Clientes</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="brand-footer-card">
+      <div class="footer-title">SmartLog Enterprise</div>
+      <div class="footer-subtitle">Smart Res</div>
+    </div>
+  </div>
+</aside>

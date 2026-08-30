@@ -1,0 +1,28 @@
+<header class="top-header">
+  <div class="header-left">
+    <a routerLink="/home" class="brand-logo">
+      <img src="/Smartlog.png" alt="SmartLog" class="brand-img" onerror="this.src='Smartlog.png';" />
+      <div class="logo-text">
+        <span class="brand-name">SmartLog</span>
+        <span class="brand-badge">ADMIN</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="header-right">
+    <div class="tenant-chip">
+      <span class="tenant-icon">🏢</span>
+      <span class="tenant-name">{{ authService.empresaId() }}</span>
+    </div>
+
+    <div class="user-chip">
+      <div class="user-avatar">
+        <span>AD</span>
+      </div>
+      <div class="user-info">
+        <span class="user-name">{{ authService.currentUser().nome }}</span>
+        <span class="user-role">{{ authService.currentUser().role }}</span>
+      </div>
+    </div>
+  </div>
+</header>

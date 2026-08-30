@@ -1,0 +1,5 @@
+/* App Root Container */
+:host {
+  display: block;
+  min-height: 100vh;
+}
