@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 export interface UserProfile {
   uid: string;
@@ -28,15 +29,15 @@ export class AuthService {
   });
 
   private getStoredToken(): string {
-    return localStorage.getItem(this.TOKEN_KEY) || 'admin-bearer-token-smartlog';
+    return localStorage.getItem(this.TOKEN_KEY) || environment.devAuthToken;
   }
 
   private getStoredEmpresaId(): string {
-    return localStorage.getItem(this.EMPRESA_KEY) || 'empresa-001';
+    return localStorage.getItem(this.EMPRESA_KEY) || environment.defaultEmpresaId;
   }
 
   private getStoredApiUrl(): string {
-    return localStorage.getItem(this.API_URL_KEY) || '/api/v1';
+    return localStorage.getItem(this.API_URL_KEY) || environment.apiUrl;
   }
 
   setToken(token: string) {
