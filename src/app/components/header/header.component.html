@@ -10,8 +10,9 @@
   </div>
 
   <div class="header-right">
+    <a class="btn btn-secondary" routerLink="/login" (click)="authService.logout()">Sair</a>
     <div class="tenant-chip">
-      <span class="tenant-icon">🏢</span>
+      <span class="tenant-icon"><app-icon name="building"></app-icon></span>
       <span class="tenant-name">{{ authService.empresaId() }}</span>
     </div>
 

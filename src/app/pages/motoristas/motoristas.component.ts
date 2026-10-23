@@ -53,7 +53,7 @@ export class MotoristasComponent implements OnInit {
     this.novoMotorista = {
       nome: '',
       email: '',
-      uid: 'uid-mot-' + Math.floor(100 + Math.random() * 900),
+      uid: '',
       ativo: true
     };
     this.showModalCriar = true;
@@ -74,7 +74,7 @@ export class MotoristasComponent implements OnInit {
       next: (criado) => {
         this.isSubmitting.set(false);
         this.fecharModalCriar();
-        this.notificationService.success('Motorista Cadastrado!', criado.nome);
+        this.notificationService.success('Motorista Cadastrado!', criado.nome + '. Para o primeiro acesso, use Recuperar senha no aplicativo.');
         this.motoristas.update(m => [criado, ...m]);
       },
       error: () => {
@@ -96,12 +96,12 @@ export class MotoristasComponent implements OnInit {
 
   get motoristasFiltrados(): Motorista[] {
     return this.motoristas().filter(m => {
-      const matchStatus = this.filtroStatus === 'TODOS' || 
+      const matchStatus = this.filtroStatus === 'TODOS' ||
         (this.filtroStatus === 'ATIVOS' && m.ativo) ||
         (this.filtroStatus === 'INATIVOS' && !m.ativo);
-      
+
       const busca = this.termoBusca.toLowerCase().trim();
-      const matchBusca = !busca || 
+      const matchBusca = !busca ||
         m.nome.toLowerCase().includes(busca) ||
         m.email.toLowerCase().includes(busca) ||
         m.id.toLowerCase().includes(busca);

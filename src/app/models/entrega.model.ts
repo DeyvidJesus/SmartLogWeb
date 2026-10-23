@@ -1,4 +1,4 @@
-export type EntregaStatus = 'PENDENTE' | 'EM_ROTA' | 'EM_TRANSITO' | 'ENTREGUE' | 'CANCELADA';
+export type EntregaStatus = 'PENDENTE' | 'EM_ROTA' | 'EM_TRANSITO' | 'ATRASADA' | 'ENTREGUE' | 'CANCELADA';
 export type JanelaEntrega = 'MANHA' | 'TARDE' | 'NOITE' | 'COMERCIAL';
 
 export interface Entrega {
@@ -19,6 +19,11 @@ export interface Entrega {
   janelaEntrega?: JanelaEntrega;
   criadaEm: string;
   atualizadaEm: string;
+  recebedor?: string | null;
+  observacaoEntrega?: string | null;
+  entregueEm?: string | null;
+  confirmadoPorNome?: string | null;
+  historicoStatus?: {status: string; em: string; responsavel: string; recebedor?: string; observacao?: string}[];
 }
 
 export interface CriarEntregaRequest {
@@ -36,6 +41,8 @@ export interface CriarEntregaRequest {
 
 export interface AtualizarStatusRequest {
   status: EntregaStatus;
+  recebedor?: string;
+  observacaoEntrega?: string;
 }
 
 export interface EntregaListResponse {

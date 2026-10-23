@@ -48,8 +48,8 @@ export class EntregaService {
     return this.http.post<Entrega>(this.url, request);
   }
 
-  atualizarStatus(id: string, status: EntregaStatus): Observable<Entrega> {
-    const body: AtualizarStatusRequest = { status };
+  atualizarStatus(id: string, status: EntregaStatus, recebedor?: string, observacaoEntrega?: string): Observable<Entrega> {
+    const body: AtualizarStatusRequest = { status, ...(status === 'ENTREGUE' ? {recebedor, observacaoEntrega} : {}) };
     return this.http.patch<Entrega>(`${this.url}/${id}/status`, body);
   }
 }

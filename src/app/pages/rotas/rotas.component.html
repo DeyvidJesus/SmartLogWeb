@@ -62,6 +62,11 @@
           <span class="meta-value">{{ rota.motoristaId || 'Não atribuído' }}</span>
         </div>
         <div class="card-meta">
+          <span class="meta-label">Trajeto restante:</span>
+          <span *ngIf="rota.distanciaRestanteMetros != null; else semDistancia">{{ rota.distanciaRestanteMetros! / 1000 | number:'1.1-1' }} km{{ rota.distanciaIncluiGps ? ' · desde o GPS' : ' · entre paradas' }} · {{ rota.distanciaCalculadaEm | date:'dd/MM HH:mm' }}</span>
+          <ng-template #semDistancia><span>Abra o mapa no app para calcular</span></ng-template>
+        </div>
+        <div class="card-meta">
           <span class="meta-label">ID da Rota:</span>
           <span class="font-mono" style="font-size: 0.75rem;">{{ rota.id }}</span>
         </div>

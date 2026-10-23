@@ -1,3 +1,7 @@
+> Publicação atual: https://smartlog-next-2026.netlify.app — configuração e ensaio no [guia Netlify](../SmartLogAPI/docs/NETLIFY.md). Os procedimentos Google/Cloud Run abaixo são alternativas históricas.
+
+> Integração atual: login em /login com Firebase, dados compartilhados com o app e assistente Gemini em /admin/assistente. Consulte ../SmartLogAPI/docs/INTEGRACAO.md no workspace integrado.
+
 # SmartLog Web
 
 [![CI](https://github.com/DeyvidJesus/SmartLogWeb/actions/workflows/ci.yml/badge.svg)](https://github.com/DeyvidJesus/SmartLogWeb/actions/workflows/ci.yml)
@@ -11,9 +15,8 @@ Painel web administrativo do SmartLog, sistema de gestão logística. Consome a
 - **Página inicial** (`/home`) de apresentação da plataforma, com acesso ao painel.
 - **Dashboard** (`/admin/dashboard`): indicadores calculados a partir das entregas, rotas,
   motoristas, clientes e veículos retornados pela API (totais, pendentes, em trânsito,
-  entregues, taxa de sucesso) e lista de entregas recentes. O mapa operacional (Leaflet +
-  OpenStreetMap) exibe o CD, veículos e rotas com posições **demonstrativas fixas** — ainda
-  não há rastreamento em tempo real.
+  entregues, proporção de entregas concluídas) e lista de entregas recentes. O mapa operacional mostra o último GPS real enviado pelo app, com horário. A operação é consultada a cada 5 segundos.
+- **Assistente** (/admin/assistente): consulta a API e o Gemini com os dados autorizados. A chave fica no servidor.
 - **Entregas** (`/admin/entregas`): listagem com filtros, criação e atualização de status.
 - **Rotas**, **Motoristas** e **Clientes**: listagem, consulta e cadastro.
 - **Veículos** (`/admin/veiculos`): gestão da frota (cadastro, edição e exclusão).
@@ -30,7 +33,7 @@ Painel web administrativo do SmartLog, sistema de gestão logística. Consome a
 
 ## Executar junto com a SmartLogAPI
 
-O painel ainda não tem tela de login com Firebase. Em desenvolvimento ele usa o atalho de
+O painel possui login Firebase. O fluxo abaixo é uma alternativa local de demonstração com o atalho de
 autenticação da API, que só existe no perfil `dev` dela.
 
 1. Suba a API com o perfil `dev` (veja o
@@ -87,4 +90,13 @@ src/app
 
 - [SmartLogAPI](https://github.com/DeyvidJesus/SmartLogAPI) — backend REST consumido por este painel.
 - [Smartlog](https://github.com/DeyvidJesus/Smartlog) — app mobile em Flutter (projeto em
-  equipe), que hoje acessa o Firestore diretamente com outro modelo de dados.
+  equipe), que compartilha as coleções raiz e usa esta API para status e chat.
+
+
+## Firebase e validação integrada
+
+Com os emuladores e a API no perfil emulator iniciados, execute npm start -- --configuration emulator. Esse modo usa Auth emulado, sem token dev; consulte o guia integrado.
+
+Para Firebase real pelo Angular local, remova devAuthToken do environment de desenvolvimento e faça login com um administrador existente. O build de produção já usa Firebase real, sem token de demonstração. O cadastro administrativo é validado em /api/v1/me antes de abrir o painel.
+
+Passaram 16 testes e o build de produção em 23/10/2026. O Leaflet mantém um aviso CommonJS. A conferência visual no navegador e o ensaio com o tablet ainda precisam ser realizados.

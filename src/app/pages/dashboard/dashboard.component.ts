@@ -1,3 +1,4 @@
+import { IconComponent } from '../../components/icon/icon.component';
 import { Component, OnInit, AfterViewInit, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -6,11 +7,12 @@ import { DashboardService } from '../../services/dashboard.service';
 import { NotificationService } from '../../services/notification.service';
 import { DashboardMetrics, AlertaOperacional } from '../../models/dashboard.model';
 import { Entrega, EntregaStatus } from '../../models/entrega.model';
+import { Rota } from '../../models/rota.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [IconComponent, CommonModule, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -28,9 +30,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   showModalDetalhes: boolean = false;
 
   private map: L.Map | null = null;
+  private markers: L.LayerGroup | null = null;
+  private requestInFlight = false;
+  private refreshTimer?: ReturnType<typeof setInterval>;
+  readonly rotas = signal<Rota[]>([]);
 
   ngOnInit() {
     this.carregarDados();
+    this.refreshTimer = setInterval(() => { if (!this.isLoading()) this.carregarDados(); }, 5000);
   }
 
   ngAfterViewInit() {
@@ -39,6 +46,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    clearInterval(this.refreshTimer);
     if (this.map) {
       this.map.remove();
       this.map = null;
@@ -46,19 +54,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   carregarDados() {
-    this.isLoading.set(true);
+    if(this.requestInFlight) return;
+    this.requestInFlight = true;
+    if(!this.metrics()) this.isLoading.set(true);
     this.errorMessage.set(null);
 
     this.dashboardService.getDashboardData().subscribe({
       next: (data) => {
         this.metrics.set(data.metrics);
+        this.rotas.set(data.rotas);
         this.entregasRecentes.set(data.entregasRecentes);
         this.ultimaAtualizacao.set(new Date());
+        this.requestInFlight = false;
         this.isLoading.set(false);
-        setTimeout(() => this.updateMapMarkers(), 400);
+        setTimeout(() => { this.initMap(); this.map?.invalidateSize(); this.updateMapMarkers(); }, 0);
       },
       error: () => {
-        this.errorMessage.set('Não foi possível carregar os dados analíticos da Torre de Controle.');
+        this.metrics.set(null);
+        this.errorMessage.set('Não foi possível atualizar a operação. Verifique a conexão e tente novamente.');
+        this.requestInFlight = false;
         this.isLoading.set(false);
         this.notificationService.error('Erro no Dashboard', 'Falha ao carregar indicadores operacionais.');
       }
@@ -86,50 +100,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private updateMapMarkers() {
     if (!this.map) return;
-
-    // CD Central Smart Res / SmartLog Hub
-    const cdIcon = L.divIcon({
-      className: 'custom-cd-marker',
-      html: '<div class="cd-pin">🏢 CD Central</div>',
-      iconSize: [100, 30],
-      iconAnchor: [50, 15]
-    });
-
-    L.marker([-23.5280, -46.6870], { icon: cdIcon })
-      .addTo(this.map)
-      .bindPopup('<b>CD Central SmartLog (São Paulo)</b><br>Capacidade: 45.000m³ • 18 docas ativas');
-
-    // Frotas e Caminhões em Trânsito
-    const truckLocations = [
-      { id: 'BRA2E19', lat: -23.5615, lng: -46.6559, status: 'Em Rota • Av. Paulista', motorista: 'Carlos Silva' },
-      { id: 'LOG8X44', lat: -22.9056, lng: -47.0608, status: 'Em Deslocamento • Campinas', motorista: 'Marcos Oliveira' },
-      { id: 'SLG9A01', lat: -23.9618, lng: -46.3322, status: 'Entregando • Santos', motorista: 'Equipe Express' },
-      { id: 'CAR7B22', lat: -23.4969, lng: -46.4422, status: 'Em Rota • Zona Leste', motorista: 'Frota Pesada' }
-    ];
-
-    truckLocations.forEach(truck => {
-      const truckIcon = L.divIcon({
-        className: 'custom-truck-marker',
-        html: `<div class="truck-pin">🚚 ${truck.id}</div>`,
-        iconSize: [90, 26],
-        iconAnchor: [45, 13]
+    if (!this.markers) this.markers = L.layerGroup().addTo(this.map);
+    this.markers.clearLayers();
+    const positions: L.LatLngExpression[] = [];
+    for (const rota of this.rotas()) {
+      const gps = rota.localizacaoAtual;
+      if (!gps || !Number.isFinite(gps.latitude) || !Number.isFinite(gps.longitude)) continue;
+      const point: L.LatLngExpression = [gps.latitude, gps.longitude];
+      positions.push(point);
+      const info = document.createElement('div');
+      const time = gps.atualizadoEm ? new Date(gps.atualizadoEm).toLocaleString('pt-BR') : 'Horário não informado';
+      info.textContent = `${rota.nome} — ${rota.status || 'Status não informado'} — GPS: ${time}`;
+      const icon = L.divIcon({
+        className: 'smartlog-map-pin',
+        html: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40" aria-hidden="true"><path d="M16 1C8 1 2 7 2 15c0 10 14 23 14 23s14-13 14-23C30 7 24 1 16 1Z" fill="#FF6500" stroke="#fff" stroke-width="2"/><circle cx="16" cy="15" r="5" fill="#fff"/></svg>',
+        iconSize: [32, 40], iconAnchor: [16, 40], popupAnchor: [0, -36],
       });
-
-      L.marker([truck.lat, truck.lng], { icon: truckIcon })
-        .addTo(this.map!)
-        .bindPopup(`<b>Veículo ${truck.id}</b><br>Condutor: ${truck.motorista}<br>Status: ${truck.status}`);
-    });
-
-    // Traçar Rota de Distribuição (Polylines)
-    const rota1Coords: L.LatLngExpression[] = [
-      [-23.5280, -46.6870], // CD
-      [-23.5505, -46.6333], // Centro
-      [-23.5615, -46.6559]  // Av Paulista
-    ];
-
-    L.polyline(rota1Coords, { color: '#FF6500', weight: 4, opacity: 0.8, dashArray: '6, 8' }).addTo(this.map);
+      L.marker(point, {icon, title: rota.nome, alt: 'Localização da rota ' + rota.nome})
+        .addTo(this.markers).bindPopup(info);
+    }
+    if (positions.length) this.map.fitBounds(L.latLngBounds(positions), { maxZoom: 14, padding: [30, 30] });
   }
-
   abrirModalDetalhes(entrega: Entrega) {
     this.entregaSelecionada = entrega;
     this.showModalDetalhes = true;
@@ -146,6 +137,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'EM_ROTA':
       case 'EM_TRANSITO': return 'badge-transito';
       case 'ENTREGUE': return 'badge-entregue';
+      case 'ATRASADA':
       case 'CANCELADA': return 'badge-cancelada';
       default: return '';
     }
@@ -157,6 +149,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'EM_ROTA': return 'Em Rota';
       case 'EM_TRANSITO': return 'Em Trânsito';
       case 'ENTREGUE': return 'Entregue';
+      case 'ATRASADA': return 'Atrasada';
       case 'CANCELADA': return 'Cancelada';
       default: return status;
     }

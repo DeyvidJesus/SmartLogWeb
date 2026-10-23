@@ -65,6 +65,8 @@ export class EntregasComponent implements OnInit {
 
   entregaSelecionada: Entrega | null = null;
   novoStatus: EntregaStatus = 'PENDENTE';
+  recebedor = '';
+  observacaoEntrega = '';
 
   ngOnInit() {
     this.carregarEntregas();
@@ -189,6 +191,8 @@ export class EntregasComponent implements OnInit {
   abrirModalStatus(entrega: Entrega) {
     this.entregaSelecionada = entrega;
     this.novoStatus = entrega.status;
+    this.recebedor = entrega.recebedor || '';
+    this.observacaoEntrega = entrega.observacaoEntrega || '';
     this.showModalStatus = true;
   }
 
@@ -198,13 +202,17 @@ export class EntregasComponent implements OnInit {
   }
 
   salvarNovoStatus() {
-    if (!this.entregaSelecionada) return;
+    if (!this.entregaSelecionada || this.isSubmitting()) return;
+    if (this.novoStatus === 'ENTREGUE' && !this.recebedor.trim()) {
+      this.notificationService.warning('Recebedor obrigatório', 'Informe quem recebeu a entrega.');
+      return;
+    }
 
     this.isSubmitting.set(true);
     const id = this.entregaSelecionada.id;
     const status = this.novoStatus;
 
-    this.entregaService.atualizarStatus(id, status).subscribe({
+    this.entregaService.atualizarStatus(id, status, this.recebedor.trim(), this.observacaoEntrega.trim()).subscribe({
       next: (entregaAtualizada) => {
         this.isSubmitting.set(false);
         this.fecharModalStatus();

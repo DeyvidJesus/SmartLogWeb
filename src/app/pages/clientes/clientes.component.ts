@@ -58,7 +58,7 @@ export class ClientesComponent implements OnInit {
     this.novoCliente = {
       nome: '',
       email: '',
-      telefone: '119' + Math.floor(10000000 + Math.random() * 90000000),
+      telefone: '',
       ativo: true
     };
     this.cepCliente = '';
@@ -102,12 +102,12 @@ export class ClientesComponent implements OnInit {
 
   get clientesFiltrados(): Cliente[] {
     return this.clientes().filter(c => {
-      const matchStatus = this.filtroStatus === 'TODOS' || 
+      const matchStatus = this.filtroStatus === 'TODOS' ||
         (this.filtroStatus === 'ATIVOS' && c.ativo) ||
         (this.filtroStatus === 'INATIVOS' && !c.ativo);
-      
+
       const busca = this.termoBusca.toLowerCase().trim();
-      const matchBusca = !busca || 
+      const matchBusca = !busca ||
         c.nome.toLowerCase().includes(busca) ||
         c.email.toLowerCase().includes(busca) ||
         (c.telefone && c.telefone.includes(busca)) ||

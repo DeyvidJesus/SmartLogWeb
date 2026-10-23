@@ -4,17 +4,18 @@
     <div>
       <div class="control-tower-badge">TORRE DE CONTROLE ENTERPRISE</div>
       <h1 class="page-title">Painel Operacional & Telemetria</h1>
-      <p class="page-subtitle">Monitoramento em tempo real de frotas, entregas e cumprimento de SLA</p>
+      <p class="page-subtitle">Dados compartilhados com o aplicativo. Atualização automática a cada 5 segundos.</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="carregarDados()" [disabled]="isLoading()">
         <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
-        <span *ngIf="!isLoading()">🔄 Atualizar</span>
+        <span *ngIf="!isLoading()"><app-icon name="refresh"></app-icon> Atualizar</span>
       </button>
       <a routerLink="/admin/entregas" class="btn btn-orange">+ Nova Entrega</a>
     </div>
   </div>
 
+  <div class="card" role="alert" *ngIf="errorMessage()" style="padding:20px;color:#b91c1c">{{ errorMessage() }}</div>
   <!-- Loading State -->
   <div class="card loading-card" *ngIf="isLoading()">
     <div class="spinner-lg"></div>
@@ -24,58 +25,59 @@
   <!-- Metrics Grid (Enterprise Supply Chain KPIs) -->
   <div class="metrics-grid" *ngIf="!isLoading() && metrics()">
     <div class="kpi-card card">
-      <div class="kpi-icon icon-blue">📦</div>
+      <div class="kpi-icon icon-blue"><app-icon name="package"></app-icon></div>
       <div class="kpi-value">{{ metrics()?.totalEntregas }}</div>
       <div class="kpi-label">Total de Entregas</div>
-      <div class="kpi-sub">Carga Total: <strong>{{ metrics()?.toneladasDespachadas }} ton</strong></div>
+      <div class="kpi-sub">Pendentes: <strong>{{ metrics()?.pendentes }}</strong></div>
     </div>
 
     <div class="kpi-card card">
-      <div class="kpi-icon icon-orange">🚚</div>
+      <div class="kpi-icon icon-orange"><app-icon name="truck"></app-icon></div>
       <div class="kpi-value text-orange">{{ metrics()?.totalVeiculos }}</div>
       <div class="kpi-label">Frotas / Veículos Ativos</div>
-      <div class="kpi-sub">Ocupação Média: <strong>{{ metrics()?.taxaOcupacaoFrota }}%</strong></div>
+      <div class="kpi-sub">Motoristas ativos: <strong>{{ metrics()?.totalMotoristas }}</strong></div>
     </div>
 
     <div class="kpi-card card">
-      <div class="kpi-icon icon-green">🎯</div>
-      <div class="kpi-value text-green">{{ metrics()?.otifPercentual }}%</div>
-      <div class="kpi-label">Índice OTIF (On-Time In-Full)</div>
-      <div class="kpi-sub">SLA Cumprido: <strong>{{ metrics()?.slaCumprimentoPercentual }}%</strong></div>
+      <div class="kpi-icon icon-green"><app-icon name="target"></app-icon></div>
+      <div class="kpi-value text-green">{{ metrics()?.taxaSucesso }}%</div>
+      <div class="kpi-label">Entregas concluídas</div>
+      <div class="kpi-sub">Em rota: <strong>{{ metrics()?.emTransito }}</strong></div>
     </div>
 
     <div class="kpi-card card">
-      <div class="kpi-icon icon-purple">👥</div>
+      <div class="kpi-icon icon-purple"><app-icon name="users"></app-icon></div>
       <div class="kpi-value">{{ metrics()?.totalClientes }}</div>
-      <div class="kpi-label">Clientes Parceiros</div>
+      <div class="kpi-label">Clientes cadastrados</div>
       <div class="kpi-sub">Rotas Operando: <strong>{{ metrics()?.totalRotas }}</strong></div>
     </div>
   </div>
 
-  <!-- TORRE DE CONTROLE: MAPA AO VIVO + CENTRAL DE ALERTAS CRÍTICOS -->
-  <div class="control-tower-grid" *ngIf="!isLoading()">
-    <!-- MAPA AO VIVO (Leaflet) -->
+  <!-- TORRE DE CONTROLE: MAPA CONSULTA A CADA 5 S + CENTRAL DE ALERTAS CRÍTICOS -->
+  <div class="control-tower-grid" [hidden]="!metrics()">
+    <!-- MAPA CONSULTA A CADA 5 S (Leaflet) -->
     <div class="card map-card">
       <div class="map-card-header">
         <div class="map-title-wrap">
           <span class="pulse-dot"></span>
-          <h2 class="map-title">Mapa de Telemetria & Frotas em Tempo Real</h2>
+          <h2 class="map-title">Localização informada pelo aplicativo</h2>
         </div>
-        <span class="live-pill">AO VIVO</span>
+        <span class="live-pill">CONSULTA A CADA 5 S</span>
       </div>
       <div id="operational-map" class="map-container"></div>
+      <p class="text-dim" style="padding:12px">O mapa mostra o último GPS recebido de cada rota. Sem envio do motorista, não há posição disponível.</p>
     </div>
 
     <!-- CENTRAL DE ALERTAS OPERACIONAIS -->
     <div class="card alerts-panel-card">
       <div class="alerts-header">
-        <h3 class="alerts-title">🚨 Alertas da Operação</h3>
+        <h3 class="alerts-title"><app-icon name="alert"></app-icon> Alertas da Operação</h3>
         <span class="alert-count-tag">{{ metrics()?.alertas?.length || 0 }} ativos</span>
       </div>
 
       <div class="alerts-list">
-        <div *ngFor="let alerta of metrics()?.alertas" 
-             class="alert-item" 
+        <div *ngFor="let alerta of metrics()?.alertas"
+             class="alert-item"
              [class.alert-critico]="alerta.tipo === 'CRITICO'"
              [class.alert-aviso]="alerta.tipo === 'ALERTA'"
              [class.alert-info]="alerta.tipo === 'INFO'">
@@ -137,7 +139,7 @@
   </div>
 
   <!-- Recent Deliveries Section (Clickable rows) -->
-  <div class="card recent-deliveries-card" *ngIf="!isLoading()">
+  <div class="card recent-deliveries-card" *ngIf="!isLoading() && metrics()">
     <div class="section-card-header">
       <div class="section-title-wrap">
         <h2 class="section-title">Últimas Entregas Atualizadas</h2>
@@ -159,8 +161,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let e of entregasRecentes()" 
-              class="table-row clickable-row" 
+          <tr *ngFor="let e of entregasRecentes()"
+              class="table-row clickable-row"
               (click)="abrirModalDetalhes(e)"
               title="Clique para ver detalhes completos da entrega">
             <td class="font-mono font-bold">{{ e.codigo }}</td>

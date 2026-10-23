@@ -5,13 +5,13 @@
       <ul class="nav-list">
         <li>
           <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
-            <span class="nav-icon">🏠</span>
+            <span class="nav-icon"><app-icon name="home"></app-icon></span>
             <span class="nav-label">Visão Geral</span>
           </a>
         </li>
         <li>
           <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon">📊</span>
+            <span class="nav-icon"><app-icon name="chart"></app-icon></span>
             <span class="nav-label">Dashboard & Mapa</span>
           </a>
         </li>
@@ -20,34 +20,35 @@
 
     <div class="menu-section">
       <div class="section-heading">OPERAÇÕES DE LOGÍSTICA</div>
+      <a routerLink="/admin/assistente" routerLinkActive="active" class="nav-item"><span class="nav-icon"><app-icon name="spark"></app-icon></span><span class="nav-label">Assistente IA</span></a>
       <ul class="nav-list">
         <li>
           <a routerLink="/admin/entregas" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon">🚚</span>
+            <span class="nav-icon"><app-icon name="truck"></app-icon></span>
             <span class="nav-label">Entregas</span>
           </a>
         </li>
         <li>
           <a routerLink="/admin/veiculos" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon">🚛</span>
+            <span class="nav-icon"><app-icon name="truck"></app-icon></span>
             <span class="nav-label">Frotas & Veículos</span>
           </a>
         </li>
         <li>
           <a routerLink="/admin/rotas" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon">🗺️</span>
+            <span class="nav-icon"><app-icon name="map"></app-icon></span>
             <span class="nav-label">Rotas</span>
           </a>
         </li>
         <li>
           <a routerLink="/admin/motoristas" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon">👤</span>
+            <span class="nav-icon"><app-icon name="user"></app-icon></span>
             <span class="nav-label">Motoristas</span>
           </a>
         </li>
         <li>
           <a routerLink="/admin/clientes" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon">🏢</span>
+            <span class="nav-icon"><app-icon name="building"></app-icon></span>
             <span class="nav-label">Clientes</span>
           </a>
         </li>

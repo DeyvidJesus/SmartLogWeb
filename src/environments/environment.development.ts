@@ -1,5 +1,7 @@
 export const environment = {
+  firebaseAuthEmulatorUrl: '',
   production: false,
+  firebaseApiKey: 'AIzaSyDTYpJ68WmIA346_bVt_W3yPEXiNPe87pQ',
   apiUrl: '/api/v1',
   defaultEmpresaId: 'empresa-001',
   // Token do atalho de autenticação de desenvolvimento da SmartLogAPI.

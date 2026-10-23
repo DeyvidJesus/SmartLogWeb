@@ -17,10 +17,10 @@
   <div class="card toolbar-card">
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" 
-             [(ngModel)]="termoBusca" 
+      <input type="text"
+             [(ngModel)]="termoBusca"
              name="termoBusca"
-             placeholder="Buscar por nome, e-mail ou ID..." 
+             placeholder="Buscar por nome, e-mail ou ID..."
              class="search-input" />
       <button *ngIf="termoBusca" (click)="termoBusca = ''" class="clear-btn">✕</button>
     </div>
@@ -44,7 +44,7 @@
   </div>
 
   <div class="cards-grid animate-fade-in" *ngIf="!isLoading() && motoristasFiltrados.length > 0">
-    <div *ngFor="let m of motoristasFiltrados" 
+    <div *ngFor="let m of motoristasFiltrados"
          class="card motorista-card clickable-card"
          (click)="abrirDetalhes(m)">
       <div class="avatar-circle avatar-orange">
@@ -99,8 +99,8 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">UID / Identificador</label>
-            <input type="text" [(ngModel)]="novoMotorista.uid" name="uid" class="form-control font-mono" />
+            <label class="form-label">UID existente (opcional)</label>
+            <input type="text" [(ngModel)]="novoMotorista.uid" name="uid" class="form-control font-mono" placeholder="Deixe vazio para criar a conta" />
           </div>
         </div>
 

@@ -231,8 +231,19 @@
             <select [(ngModel)]="novoStatus" name="novoStatus" class="form-control">
               <option value="PENDENTE">⏳ Pendente (Aguardando Despacho)</option>
               <option value="EM_ROTA">🚚 Em Rota (Em Deslocamento)</option>
-              <option value="ENTREGUE">✅ Entregue (Concluída)</option>
+              <option value="ENTREGUE">Entregue (Concluída)</option>
             </select>
+          </div>
+          <div *ngIf="novoStatus === 'ENTREGUE'">
+            <div class="form-group">
+              <label for="recebedor" class="form-label">Quem recebeu? *</label>
+              <input id="recebedor" name="recebedor" [(ngModel)]="recebedor" required maxlength="120" class="form-control" autocomplete="off" placeholder="Nome do recebedor">
+            </div>
+            <div class="form-group">
+              <label for="observacaoEntrega" class="form-label">Observações (opcional)</label>
+              <textarea id="observacaoEntrega" name="observacaoEntrega" [(ngModel)]="observacaoEntrega" maxlength="500" class="form-control" placeholder="Ex.: recebido na portaria"></textarea>
+            </div>
+            <p>O horário e o responsável pela confirmação serão registrados automaticamente.</p>
           </div>
         </div>
 
@@ -272,6 +283,19 @@
             </div>
           </div>
 
+          <div class="detail-item full-span" *ngIf="entregaSelecionada.recebedor">
+            <span class="detail-label">CONFIRMAÇÃO DE RECEBIMENTO</span>
+            <span class="detail-val">Recebido por {{ entregaSelecionada.recebedor }}</span>
+            <span>{{ entregaSelecionada.entregueEm | date:'dd/MM/yyyy HH:mm:ss' }} · Confirmado por {{ entregaSelecionada.confirmadoPorNome || 'Não registrado' }}</span>
+            <p *ngIf="entregaSelecionada.observacaoEntrega">{{ entregaSelecionada.observacaoEntrega }}</p>
+          </div>
+          <div class="detail-item full-span" *ngIf="entregaSelecionada.historicoStatus?.length">
+            <span class="detail-label">HISTÓRICO RECENTE</span>
+            <p *ngFor="let evento of entregaSelecionada.historicoStatus">
+              {{ evento.em | date:'dd/MM HH:mm' }} · {{ evento.status }} · {{ evento.responsavel }}
+              <span *ngIf="evento.recebedor"> · Recebedor: {{ evento.recebedor }}</span>
+            </p>
+          </div>
           <div class="detail-item full-span">
             <span class="detail-label">CLIENTE DESTINATÁRIO</span>
             <span class="detail-val font-bold">{{ getNomeCliente(entregaSelecionada.clienteId) }}</span>

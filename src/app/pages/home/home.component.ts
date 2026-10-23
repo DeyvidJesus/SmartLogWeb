@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DashboardService } from '../../services/dashboard.service';
+import { AuthService } from '../../services/auth.service';
 import { DashboardMetrics } from '../../models/dashboard.model';
 
 @Component({
@@ -15,8 +16,9 @@ export class HomeComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
   readonly metrics = signal<DashboardMetrics | null>(null);
 
+  private readonly auth = inject(AuthService);
   ngOnInit() {
-    this.loadMetrics();
+    if (this.auth.isAuthenticated()) this.loadMetrics();
   }
 
   loadMetrics() {
