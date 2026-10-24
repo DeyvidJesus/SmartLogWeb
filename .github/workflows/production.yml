@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/SmartLogAPI
-          ref: 408e5ed328c80e21db63df37f19314d9a47a3839
+          ref: 247d7c2bbd7105868297e52d0930e68eb2a61c96
           path: SmartLogAPI
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/Smartlog
-          ref: e23c8a3967823a9d3402b6c4da317403c5bca874
+          ref: 347de6dcfc397c2663c525371431f24e09a3ed69
           path: Smartlog
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
@@ -71,6 +71,7 @@ jobs:
         run: |
           npm ci
           npm test -- --watch=false
+          node --test scripts/verify-production.test.mjs
           npm run build
 
       - name: Validate API contracts
@@ -128,7 +129,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/SmartLogAPI
-          ref: 408e5ed328c80e21db63df37f19314d9a47a3839
+          ref: 247d7c2bbd7105868297e52d0930e68eb2a61c96
           path: SmartLogAPI
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
