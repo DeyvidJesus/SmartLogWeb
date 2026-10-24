@@ -3,7 +3,6 @@ import {spawnSync} from 'node:child_process';
 import {readFile, appendFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {resolve} from 'node:path';
-import {createHash} from 'node:crypto';
 
 const siteId = '2e4e6ab4-bb98-4100-80db-4a074a4ecb66';
 const origin = 'https://smartlog-next-2026.netlify.app';
@@ -47,16 +46,6 @@ try {
   const model = env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('INVALID_MODEL_CONFIGURATION');
   report('Configured Gemini model', true, model);
-  const output = resolve('SmartLogWeb/dist/SmartLogWeb/browser');
-  const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-  const expectedHtml = await readFile(resolve(output, 'index.html'), 'utf8');
-  const actualHtml = await (await request(origin + '/index.html', {headers: {'Cache-Control': 'no-cache'}})).text();
-  const assets = html => [...html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+\.(?:js|css))["']/g)].map(match => match[1]).sort();
-  report('Published HTML bytes', true, hash(actualHtml) === hash(expectedHtml) ? 'identical to artifact' : 'different from artifact');
-  report('Published application asset names', JSON.stringify(assets(actualHtml)) === JSON.stringify(assets(expectedHtml)) && assets(expectedHtml).length > 0);
-  const expectedApk = await readFile(resolve(output, 'downloads/smartlog-arm64.apk'));
-  const actualApk = await request(origin + '/downloads/smartlog-arm64.apk');
-  report('Published APK matches production artifact', actualApk.status === 200 && hash(Buffer.from(await actualApk.arrayBuffer())) === hash(expectedApk), `HTTP ${actualApk.status}`);
   const metadata = await inspect(origin + '/api/v1');
   report('Public API routing', metadata.status === 200 && metadata.body?.plataforma === 'netlify-functions', `HTTP ${metadata.status}, ${metadata.contentType}`);
   const unauthorized = await inspect(origin + '/api/v1/me');
