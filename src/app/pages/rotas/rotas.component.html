@@ -141,6 +141,10 @@
             <span class="detail-label">NOME DA ROTA</span>
             <span class="detail-val" style="font-size: 1.0625rem;">{{ rotaSelecionada.nome }}</span>
           </div>
+          <div class="detail-item full-span" *ngIf="rotaSelecionada.observacoes">
+            <span class="detail-label">OBSERVAÇÕES / ROTEIRO DO CASO</span>
+            <p style="white-space: pre-line">{{ rotaSelecionada.observacoes }}</p>
+          </div>
 
           <div class="detail-item">
             <span class="detail-label">STATUS OPERACIONAL</span>

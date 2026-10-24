@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/SmartLogAPI
-          ref: f5411a392d0e7bf5e802401dd3f16dc60e5df477
+          ref: 408e5ed328c80e21db63df37f19314d9a47a3839
           path: SmartLogAPI
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
@@ -128,7 +128,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/SmartLogAPI
-          ref: f5411a392d0e7bf5e802401dd3f16dc60e5df477
+          ref: 408e5ed328c80e21db63df37f19314d9a47a3839
           path: SmartLogAPI
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 

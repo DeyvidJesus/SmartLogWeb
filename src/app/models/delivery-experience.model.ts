@@ -4,9 +4,9 @@ export interface Receipt {
   volumesRecebidos: number;
   fotos: string[];
   assinatura?: string;
-  latitude?: number;
-  longitude?: number;
-  precisao?: number;
+  latitude?: number | null;
+  longitude?: number | null;
+  precisao?: number | null;
   observacao?: string;
   responsavel?: string;
 }

@@ -289,6 +289,10 @@
             <span>{{ entregaSelecionada.entregueEm | date:'dd/MM/yyyy HH:mm:ss' }} · Confirmado por {{ entregaSelecionada.confirmadoPorNome || 'Não registrado' }}</span>
             <p *ngIf="entregaSelecionada.observacaoEntrega">{{ entregaSelecionada.observacaoEntrega }}</p>
           </div>
+          <div class="detail-item full-span" *ngIf="entregaSelecionada.observacoes">
+            <span class="detail-label">OBSERVAÇÕES / ROTEIRO DO CASO</span>
+            <p style="white-space: pre-line">{{ entregaSelecionada.observacoes }}</p>
+          </div>
           <div class="detail-item full-span" *ngIf="entregaSelecionada.historicoStatus?.length">
             <span class="detail-label">HISTÓRICO RECENTE</span>
             <p *ngFor="let evento of entregaSelecionada.historicoStatus">

@@ -1,6 +1,7 @@
 export interface Rota {
   id: string;
   nome: string;
+  observacoes?: string | null;
   motoristaId: string | null;
   localizacaoAtual?: {latitude: number; longitude: number; atualizadoEm: string | null} | null;
   status?: string;
