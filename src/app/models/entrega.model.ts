@@ -22,6 +22,7 @@ export interface Entrega {
   atualizadaEm: string;
   recebedor?: string | null;
   observacaoEntrega?: string | null;
+  observacoes?: string | null;
   entregueEm?: string | null;
   confirmadoPorNome?: string | null;
   comprovanteDisponivel?: boolean;

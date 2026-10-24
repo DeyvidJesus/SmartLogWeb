@@ -1,0 +1,63 @@
+name: Prepare NEXT demonstration cases
+
+on:
+  push:
+    branches: [codex/next-demo-cases]
+    paths: [.github/workflows/next-demo-cases.yml]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Preview only or apply the owner-requested reset of the isolated DEMO company'
+        type: choice
+        options: [preview, apply]
+        default: preview
+      operation:
+        description: 'Keep the default to preserve cases already used; change only for a new intentional reset'
+        type: string
+        default: next-fair-cases-v2
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smartlog-next-demo-maintenance
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: SmartLogWeb
+      - uses: actions/checkout@v4
+        with:
+          repository: DeyvidJesus/SmartLogAPI
+          ref: 408e5ed328c80e21db63df37f19314d9a47a3839
+          path: SmartLogAPI
+          token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate maintenance plan and contracts
+        working-directory: SmartLogAPI/netlify
+        run: |
+          npm ci
+          npm test
+      - name: Prepare owner-requested demonstration data
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          SMARTLOG_DEMO_MODE: ${{ github.event_name == 'push' && 'apply' || inputs.mode }}
+          SMARTLOG_DEMO_OPERATION: ${{ inputs.operation || 'next-fair-cases-v2' }}
+          SMARTLOG_DEMO_BACKUP_DIR: ${{ runner.temp }}/smartlog-demo-backup
+        run: node SmartLogWeb/scripts/prepare-next-demo.mjs
+      - name: Preserve pre-reset backup and execution report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-demo-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/smartlog-demo-backup
+          if-no-files-found: warn
+          retention-days: 14

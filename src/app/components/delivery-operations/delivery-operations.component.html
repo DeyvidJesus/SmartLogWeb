@@ -70,7 +70,7 @@
       <strong>{{ proof.recebedor }}</strong> · {{ proof.em | date: 'dd/MM/yyyy HH:mm:ss' }}
     </p>
     <p>{{ proof.volumesRecebidos }} volumes · Confirmado por {{ proof.responsavel }}</p>
-    <p>
+    <p *ngIf="proof.latitude != null && proof.longitude != null">
       Local registrado: {{ proof.latitude }}, {{ proof.longitude }} · Precisão:
       {{ proof.precisao | number: '1.0-0' }} m
     </p>
