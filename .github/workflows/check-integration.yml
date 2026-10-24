@@ -1,0 +1,38 @@
+name: Check production integration
+
+on:
+  push:
+    branches: [codex/fix-ai-integration]
+    paths: [.github/workflows/check-integration.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smartlog-production-diagnosis
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: SmartLogWeb
+      - uses: actions/checkout@v4
+        with:
+          repository: DeyvidJesus/SmartLogAPI
+          ref: 408e5ed328c80e21db63df37f19314d9a47a3839
+          path: SmartLogAPI
+          token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix SmartLogAPI/netlify
+      - name: Check live routing, Firebase identities and Gemini
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: node SmartLogWeb/scripts/check-production-integration.mjs
