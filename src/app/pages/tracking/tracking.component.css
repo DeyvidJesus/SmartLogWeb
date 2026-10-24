@@ -1,0 +1,130 @@
+:host {
+  display: block;
+  background: #f8fafc;
+  min-height: 100dvh;
+  color: #0f172a;
+}
+header {
+  background: white;
+  min-height: 76px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px max(20px, calc((100vw - 1000px) / 2));
+  font-size: 13px;
+}
+header a {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #0f172a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+header a span {
+  background: #c94d0b;
+  color: white;
+  border-radius: 10px;
+  padding: 3px 9px;
+  margin-right: 7px;
+}
+main {
+  max-width: 800px;
+  margin: auto;
+  padding: 48px 24px;
+}
+.kicker {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #ab420b;
+  font-weight: 800;
+}
+h1 {
+  font-size: clamp(30px, 6vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  margin: 15px 0;
+}
+h2 {
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+.intro {
+  color: #475569;
+  margin-bottom: 28px;
+}
+.card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 26px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+.card p {
+  margin: 9px 0;
+  line-height: 1.6;
+}
+.code {
+  color: #ab420b;
+  font-weight: 800;
+}
+.muted {
+  color: #64748b;
+  font-size: 13px;
+}
+.badge {
+  display: inline-block;
+  background: #fff0e7;
+  color: #ab420b;
+  border-radius: 20px;
+  padding: 3px 9px;
+  font-size: 11px;
+  margin-left: 10px;
+}
+article + article {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+ol {
+  padding-left: 20px;
+}
+li {
+  padding: 8px;
+}
+.photos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.photos img {
+  width: 100%;
+  max-width: 340px;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.error {
+  border-left: 4px solid #c94d0b;
+}
+footer {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  main {
+    padding: 32px 18px;
+  }
+  .card {
+    padding: 20px;
+  }
+}

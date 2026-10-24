@@ -1,0 +1,67 @@
+<header>
+  <a routerLink="/home" aria-label="SmartLog início"><span aria-hidden="true">↗</span> SmartLog</a
+  ><span>Acompanhamento da entrega</span>
+</header>
+<main id="main-content">
+  <p class="kicker">DO PEDIDO AO RECEBIMENTO</p>
+  <h1>Sua entrega, a um toque.</h1>
+  <p class="intro">Consulte as atualizações enviadas pela equipe responsável.</p>
+  <p *ngIf="loading()" role="status">Consultando sua entrega…</p>
+  <section class="card error" *ngIf="error()" role="alert">
+    <h2>Acompanhamento indisponível</h2>
+    <p>{{ error() }}</p>
+  </section>
+  <ng-container *ngIf="data() as delivery">
+    <section class="card">
+      <p class="code">{{ delivery.codigo }}</p>
+      <h2>{{ statuses[delivery.status] || delivery.status }}</h2>
+      <p *ngIf="delivery.janelaEntrega">
+        Janela cadastrada: <strong>{{ windows[delivery.janelaEntrega] }}</strong>
+      </p>
+      <p class="muted">
+        Atualização da entrega: {{ delivery.atualizadaEm | date: 'dd/MM/yyyy HH:mm' }}. A janela
+        cadastrada não é uma estimativa de chegada.
+      </p>
+    </section>
+    <section class="card">
+      <h2>Últimas atualizações</h2>
+      <ol *ngIf="delivery.historico.length; else noEvents">
+        <li *ngFor="let event of delivery.historico">
+          <span class="muted">{{ event.em | date: 'dd/MM HH:mm' }}</span>
+          <p>{{ statuses[event.status] || event.status }}</p>
+        </li>
+      </ol>
+      <ng-template #noEvents><p>A equipe ainda não registrou novas etapas.</p></ng-template>
+    </section>
+    <section class="card" *ngIf="delivery.ocorrencias.length">
+      <h2>Avisos sobre sua entrega</h2>
+      <article *ngFor="let event of delivery.ocorrencias">
+        <strong>{{ types[event.tipo] || event.tipo }}</strong
+        ><span class="badge">{{
+          event.status === 'RESOLVIDA' ? 'Resolvido' : 'Em atendimento'
+        }}</span>
+        <p>{{ event.mensagem }}</p>
+        <p class="muted">{{ event.resolvidaEm || event.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</p>
+      </article>
+    </section>
+    <section class="card" *ngIf="delivery.comprovante as proof">
+      <h2>Comprovante de recebimento</h2>
+      <p>
+        Recebido por <strong>{{ proof.recebedor }}</strong>
+      </p>
+      <p>{{ proof.volumesRecebidos }} volumes · {{ proof.em | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+      <div class="photos">
+        <img
+          *ngFor="let photo of proof.fotos; let i = index"
+          [src]="photo"
+          [alt]="'Comprovação da entrega, foto ' + (i + 1)"
+        />
+      </div>
+    </section>
+    <p class="muted">
+      Atualização automática a cada 20 segundos. Link válido até
+      {{ delivery.expiraEm | date: 'dd/MM/yyyy HH:mm' }}.
+    </p>
+  </ng-container>
+</main>
+<footer>SmartLog · Logística conectada</footer>

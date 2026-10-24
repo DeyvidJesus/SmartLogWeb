@@ -1,0 +1,111 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.operations {
+  margin-top: 24px;
+  color: #0f172a;
+  font-size: 14px;
+}
+.heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+h3 {
+  font-size: 17px;
+}
+h4 {
+  font-size: 15px;
+}
+.case {
+  border: 1px solid #e2e8f0;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 16px;
+  background: #fff;
+}
+.case p {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.occurrence {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+  margin-top: 10px;
+  font: inherit;
+}
+.occurrence:hover {
+  border-color: #c94d0b;
+}
+.state {
+  color: #ab420b;
+  background: #fff0e7;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.state.resolved {
+  color: #18775b;
+  background: #e8f5ed;
+}
+.error {
+  color: #b42318;
+}
+label {
+  display: block;
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+form button {
+  margin-top: 14px;
+}
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+}
+.photos img,
+.evidence {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.signature {
+  width: 280px;
+  max-width: 100%;
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+input {
+  min-width: 0;
+}
+.case a {
+  display: inline-block;
+  margin-top: 12px;
+  color: #ab420b;
+}
+@media print {
+  button,
+  form,
+  input {
+    display: none;
+  }
+  .case {
+    break-inside: avoid;
+  }
+}

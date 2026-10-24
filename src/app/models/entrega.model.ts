@@ -1,4 +1,5 @@
-export type EntregaStatus = 'PENDENTE' | 'EM_ROTA' | 'EM_TRANSITO' | 'ATRASADA' | 'ENTREGUE' | 'CANCELADA';
+export type EntregaStatus =
+  'PENDENTE' | 'EM_ROTA' | 'EM_TRANSITO' | 'ATRASADA' | 'ENTREGUE' | 'CANCELADA';
 export type JanelaEntrega = 'MANHA' | 'TARDE' | 'NOITE' | 'COMERCIAL';
 
 export interface Entrega {
@@ -23,7 +24,15 @@ export interface Entrega {
   observacaoEntrega?: string | null;
   entregueEm?: string | null;
   confirmadoPorNome?: string | null;
-  historicoStatus?: {status: string; em: string; responsavel: string; recebedor?: string; observacao?: string}[];
+  comprovanteDisponivel?: boolean;
+  rastreamentoAtivo?: boolean;
+  historicoStatus?: {
+    status: string;
+    em: string;
+    responsavel: string;
+    recebedor?: string;
+    observacao?: string;
+  }[];
 }
 
 export interface CriarEntregaRequest {

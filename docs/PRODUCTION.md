@@ -31,3 +31,24 @@ inclusive se o deploy falhar. A disponibilidade completa de GPS, câmera e
 autenticação deve ser conferida também em aparelho Android.
 
 O design da landing page não é alterado por esta configuração.
+
+## Comprovantes, ocorrências e acompanhamento
+
+Esta versão fixa os commits `f5411a3` da API Netlify e `e23c8a3` do app 1.1.0.
+O pipeline testa os contratos da API e o cliente Flutter por HTTP antes de gerar
+o APK. Os três repositórios devem ser revisados em conjunto; faça merge dos PRs
+da API e do app antes do PR Web, que dispara a publicação completa.
+
+O novo APK utiliza endpoints que só estarão disponíveis após esse deploy.
+Os novos dados passam pela API; não é preciso publicar novas regras Firestore
+ou configurar um novo serviço de armazenamento. Fotos e assinatura são limitadas
+e persistidas em documentos acessados pelo servidor.
+
+No painel, use **Ocorrências** para atender os registros enviados pelo motorista
+e **Entregas → Detalhes** para ver comprovantes e gerar/revogar links de acompanhamento.
+O app do cliente também permite consultar o comprovante e gerar o link.
+A página `/acompanhar/:token` é pública para quem possui o link, que expira em sete dias.
+
+Os fluxos foram exercitados com dados sintéticos, incluindo o cliente Flutter real,
+o handler HTTP da API e o dashboard no Chromium. Câmera, GPS e instalação em
+aparelho físico continuam sendo parte do ensaio antes do uso operacional.

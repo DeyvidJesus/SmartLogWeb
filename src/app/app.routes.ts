@@ -14,6 +14,12 @@ import { MotoristasComponent } from './pages/motoristas/motoristas.component';
 import { ClientesComponent } from './pages/clientes/clientes.component';
 
 export const routes: Routes = [
+  {
+    path: 'acompanhar/:token',
+    loadComponent: () =>
+      import('./pages/tracking/tracking.component').then((m) => m.TrackingComponent),
+    title: 'Acompanhe sua entrega | SmartLog',
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, title: 'Entrar no painel | SmartLog' },
   { path: 'home', component: HomeComponent, title: 'SmartLog — Sua operação na direção certa' },
@@ -35,6 +41,12 @@ export const routes: Routes = [
       },
     ],
     children: [
+      {
+        path: 'ocorrencias',
+        loadComponent: () =>
+          import('./pages/occurrences/occurrences.component').then((m) => m.OccurrencesComponent),
+        title: 'Central de ocorrências | SmartLog',
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'assistente', component: AssistenteComponent, title: 'Assistente IA | SmartLog' },
       { path: 'dashboard', component: DashboardComponent, title: 'Visão da operação | SmartLog' },

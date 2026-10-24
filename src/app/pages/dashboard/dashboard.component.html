@@ -7,6 +7,7 @@
       <p class="page-subtitle">Entregas, equipe e rotas conectadas ao aplicativo.</p>
     </div>
     <div class="header-actions">
+      <a routerLink="/admin/ocorrencias" class="btn btn-secondary"><app-icon name="alert" /> Ocorrências</a>
       <button class="btn btn-secondary" (click)="carregarDados()" [disabled]="isLoading()">
         <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
         <span *ngIf="!isLoading()"><app-icon name="refresh"></app-icon> Atualizar</span>

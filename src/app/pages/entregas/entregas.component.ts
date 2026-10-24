@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DeliveryOperationsComponent } from '../../components/delivery-operations/delivery-operations.component';
 import { FormsModule } from '@angular/forms';
 import { EntregaService } from '../../services/entrega.service';
 import { RotaService } from '../../services/rota.service';
@@ -17,7 +18,7 @@ import { Veiculo } from '../../models/veiculo.model';
 @Component({
   selector: 'app-entregas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DeliveryOperationsComponent],
   templateUrl: './entregas.component.html',
   styleUrl: './entregas.component.css'
 })
