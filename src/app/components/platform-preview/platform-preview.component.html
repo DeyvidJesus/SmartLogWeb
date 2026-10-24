@@ -1,0 +1,186 @@
+<section id="plataforma" class="platform-section section-space" aria-labelledby="platform-title">
+  <div class="container">
+    <div class="section-heading-row">
+      <div>
+        <span class="section-kicker">Uma visão que conecta tudo</span>
+        <h2 id="platform-title">Menos pontos cegos.<br />Mais controle da operação.</h2>
+      </div>
+      <p>
+        Do primeiro cadastro à entrega concluída, cada atualização ajuda você a enxergar o próximo
+        passo.
+      </p>
+    </div>
+    <div class="preview-tabs" role="tablist" aria-label="Explore a plataforma">
+      @for (tab of previewTabs; track tab.id; let i = $index) {
+        <button
+          type="button"
+          role="tab"
+          [id]="'preview-tab-' + tab.id"
+          [attr.aria-selected]="activePreview() === tab.id"
+          [attr.aria-controls]="'preview-panel-' + tab.id"
+          [tabIndex]="activePreview() === tab.id ? 0 : -1"
+          (click)="selectPreview(tab.id)"
+          (keydown)="movePreview($event, i)"
+        >
+          <app-icon [name]="tab.icon" /> {{ tab.label }}
+        </button>
+      }
+    </div>
+    <div class="product-preview">
+      <div class="preview-topbar">
+        <span class="preview-wordmark" translate="no"
+          ><span class="small-brand-mark"><app-icon name="truck" /></span> SmartLog</span
+        ><span class="illustrative-label"><span></span> Prévia com dados ilustrativos</span
+        ><span class="preview-avatar" aria-hidden="true">AD</span>
+      </div>
+      <div class="preview-body">
+        <aside class="preview-sidebar" aria-hidden="true">
+          <app-icon name="chart" /><app-icon name="package" /><app-icon name="map" /><app-icon
+            name="users"
+          /><app-icon name="spark" /><span class="preview-sidebar-bottom"
+            ><app-icon name="settings"
+          /></span>
+        </aside>
+        @for (tab of previewTabs; track tab.id) {
+          <div
+            class="preview-panel"
+            role="tabpanel"
+            [id]="'preview-panel-' + tab.id"
+            [attr.aria-labelledby]="'preview-tab-' + tab.id"
+            [hidden]="activePreview() !== tab.id"
+            tabindex="0"
+          >
+            @switch (tab.id) {
+              @case ('operacao') {
+                <div class="preview-page-heading">
+                  <div>
+                    <h3>Visão da operação</h3>
+                    <p>Seu dia, em um só lugar.</p>
+                  </div>
+                  <span class="preview-date"><app-icon name="calendar" /> Exemplo de operação</span>
+                </div>
+                <div class="preview-stats">
+                  <div>
+                    <span><app-icon name="package" /> Entregas</span><strong>24</strong
+                    ><small>na operação de exemplo</small>
+                  </div>
+                  <div>
+                    <span><app-icon name="truck" /> Em rota</span
+                    ><strong>08<span class="stat-trace" aria-hidden="true">↗</span></strong
+                    ><small>em andamento</small>
+                  </div>
+                  <div>
+                    <span><app-icon name="circle-check" /> Concluídas</span
+                    ><strong>16<span class="mini-progress" aria-hidden="true"></span></strong
+                    ><small>entregas confirmadas</small>
+                  </div>
+                </div>
+                <div class="preview-operation-grid">
+                  <div class="preview-map">
+                    <div class="preview-card-heading">
+                      <strong><app-icon name="map-pin" /> Sua operação no mapa</strong
+                      ><span class="map-key"><span></span> Posição ilustrativa</span>
+                    </div>
+                    <app-route-illustration />
+                  </div>
+                  <div class="preview-activity">
+                    <div class="preview-card-heading">
+                      <strong>Últimas atualizações</strong><app-icon name="more" />
+                    </div>
+                    <ol class="activity-list">
+                      <li>
+                        <span class="activity-dot delivered"></span>
+                        <div>
+                          <strong>Entrega confirmada</strong>
+                          <p>ENT-003 · Campinas, SP</p>
+                          <span class="status-label green">Entregue</span>
+                        </div>
+                      </li>
+                      <li>
+                        <span class="activity-dot moving"></span>
+                        <div>
+                          <strong>A caminho do cliente</strong>
+                          <p>ENT-002 · Jundiaí, SP</p>
+                          <span class="status-label orange">Em rota</span>
+                        </div>
+                      </li>
+                      <li>
+                        <span class="activity-dot moving"></span>
+                        <div>
+                          <strong>Saída registrada</strong>
+                          <p>ENT-001 · São Paulo, SP</p>
+                          <span class="status-label orange">Em rota</span>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              }
+              @case ('rotas') {
+                <div class="preview-page-heading">
+                  <div>
+                    <h3>Cada parada, no seu lugar.</h3>
+                    <p>Entregas, motorista e rota na mesma visão.</p>
+                  </div>
+                  <span class="status-label orange">Exemplo de rota</span>
+                </div>
+                <div class="route-preview-grid">
+                  <div class="preview-map">
+                    <div class="preview-card-heading">
+                      <strong>São Paulo → Campinas</strong><app-icon name="map" />
+                    </div>
+                    <app-route-illustration />
+                  </div>
+                  <div class="route-stops">
+                    <span class="route-driver"
+                      ><span class="driver-avatar">AL</span
+                      ><span><strong>Ana Lima</strong><small>Motorista de exemplo</small></span
+                      ><app-icon name="truck"
+                    /></span>
+                    <ol>
+                      <li>
+                        <span>1</span>
+                        <div>
+                          <strong>Centro de distribuição</strong><small>São Paulo, SP</small>
+                        </div>
+                        <app-icon name="check" />
+                      </li>
+                      <li>
+                        <span>2</span>
+                        <div>
+                          <strong>Entrega ENT-002</strong><small>Jundiaí, SP · Em rota</small>
+                        </div>
+                      </li>
+                      <li>
+                        <span>3</span>
+                        <div>
+                          <strong>Entrega ENT-003</strong><small>Campinas, SP · Entregue</small>
+                        </div>
+                        <app-icon name="check" />
+                      </li>
+                    </ol>
+                    <p>
+                      <app-icon name="shield-check" /> As informações ficam no escopo da sua
+                      empresa.
+                    </p>
+                  </div>
+                </div>
+              }
+              @case ('assistente') {
+                <app-assistant-demo />
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+    <div class="preview-bottom">
+      <p>
+        <app-icon name="info" /> Explore os recursos acima. Seus dados ficam no painel autenticado.
+      </p>
+      <a routerLink="/admin/dashboard" class="inline-link"
+        >Abrir meu painel <app-icon name="arrow-up-right"
+      /></a>
+    </div>
+  </div>
+</section>

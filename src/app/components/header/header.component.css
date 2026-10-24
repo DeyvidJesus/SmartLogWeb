@@ -1,128 +1,169 @@
 .top-header {
   height: var(--header-height);
-  background-color: var(--primary-dark);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  gap: 20px;
+  padding: 0 30px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  border-bottom: 2px solid var(--accent-orange);
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  color: #16344c;
 }
-
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-.brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
-
-.brand-img {
-  height: 36px;
-  width: auto;
-  object-fit: contain;
-  border-radius: 6px;
-}
-
-.fallback-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background-color: var(--accent-orange);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  color: #FFFFFF;
-}
-
-.logo-text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-name {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #FFFFFF;
-  letter-spacing: -0.02em;
-}
-
-.brand-badge {
-  font-size: 0.625rem;
-  font-weight: 800;
-  background: rgba(255, 101, 0, 0.2);
-  color: #FF8533;
-  border: 1px solid rgba(255, 101, 0, 0.4);
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-}
-
+.header-left,
 .header-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 21px;
+  min-width: 0;
 }
-
+.brand-logo {
+  display: inline-flex;
+  text-decoration: none;
+  color: inherit;
+}
+.workspace-label {
+  font-size: 11px;
+  color: #64748b;
+  border-left: 1px solid #dce5ec;
+  padding-left: 21px;
+}
 .tenant-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-chip);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #E2E8F0;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  color: #5e7284;
+  background: #f4f7fa;
+  min-width: 0;
+  max-width: 180px;
 }
-
+.tenant-chip span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tenant-chip app-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
 .user-chip {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 10px;
-  border-radius: var(--radius-chip);
-  background: rgba(255, 255, 255, 0.05);
+  gap: 9px;
+  min-width: 0;
 }
-
 .user-avatar {
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
+  background: #fff0e7;
+  color: #a64413;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-  background-color: var(--accent-orange);
-  display: flex;
+  font-size: 10px;
+  font-weight: 800;
+}
+.user-info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  max-width: 185px;
+}
+.user-name {
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-role {
+  font-size: 9px;
+  color: #64748b;
+}
+.logout-button {
+  display: inline-flex;
+  gap: 7px;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #FFFFFF;
+  min-height: 40px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  background: transparent;
+  color: #536577;
+  padding: 8px 10px;
+  border: 1px solid #dce5ec;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
 }
-
-.user-info {
-  display: flex;
-  flex-direction: column;
+.logout-button:hover {
+  color: #a64413;
+  background: #fff4ec;
 }
-
-.user-name {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  line-height: 1.2;
+.logout-button app-icon {
+  font-size: 15px;
 }
-
-.user-role {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #94A3B8;
+.admin-menu-toggle {
+  display: none;
+}
+@media (max-width: 1050px) {
+  .workspace-label {
+    display: none;
+  }
+  .top-header {
+    padding-inline: 24px;
+  }
+  .header-right {
+    gap: 15px;
+  }
+  .tenant-chip {
+    max-width: 140px;
+  }
+}
+@media (max-width: 760px) {
+  .top-header {
+    padding-inline: 16px;
+    gap: 14px;
+  }
+  .header-left {
+    gap: 12px;
+  }
+  .admin-menu-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #dce5ec;
+    background: #f4f7fa;
+    border-radius: 6px;
+    color: #16344c;
+    cursor: pointer;
+  }
+  .tenant-chip,
+  .user-info {
+    display: none;
+  }
+  .header-right {
+    gap: 12px;
+  }
+}
+@media (max-width: 400px) {
+  .user-chip {
+    display: none;
+  }
+  .header-left {
+    gap: 9px;
+  }
+  .top-header {
+    padding-inline: 12px;
+  }
 }

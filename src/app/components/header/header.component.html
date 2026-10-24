@@ -1,29 +1,32 @@
 <header class="top-header">
   <div class="header-left">
-    <a routerLink="/home" class="brand-logo">
-      <img src="/Smartlog.png" alt="SmartLog" class="brand-img" onerror="this.src='Smartlog.png';" />
-      <div class="logo-text">
-        <span class="brand-name">SmartLog</span>
-        <span class="brand-badge">ADMIN</span>
-      </div>
-    </a>
+    <button
+      id="admin-menu-toggle"
+      type="button"
+      class="admin-menu-toggle"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="admin-navigation"
+      [attr.aria-label]="menuOpen() ? 'Fechar navegação' : 'Abrir navegação'"
+      (click)="menuToggle.emit()"
+    >
+      <app-icon [name]="menuOpen() ? 'close' : 'menu'" />
+    </button>
+    <a routerLink="/home" class="brand-logo" aria-label="SmartLog, página inicial"><app-brand /></a>
+    <span class="workspace-label">Painel de gestão</span>
   </div>
-
   <div class="header-right">
-    <a class="btn btn-secondary" routerLink="/login" (click)="authService.logout()">Sair</a>
-    <div class="tenant-chip">
-      <span class="tenant-icon"><app-icon name="building"></app-icon></span>
-      <span class="tenant-name">{{ authService.empresaId() }}</span>
+    <div class="tenant-chip" [title]="authService.empresaId()">
+      <app-icon name="building" /><span>{{ authService.empresaId() }}</span>
     </div>
-
     <div class="user-chip">
-      <div class="user-avatar">
-        <span>AD</span>
-      </div>
+      <div class="user-avatar" aria-hidden="true">{{ initials() }}</div>
       <div class="user-info">
-        <span class="user-name">{{ authService.currentUser().nome }}</span>
-        <span class="user-role">{{ authService.currentUser().role }}</span>
+        <span class="user-name">{{ authService.currentUser().nome }}</span
+        ><span class="user-role">Administrador</span>
       </div>
     </div>
+    <button type="button" class="logout-button" (click)="logout()">
+      Sair <app-icon name="arrow-up-right" />
+    </button>
   </div>
 </header>

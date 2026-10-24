@@ -1,100 +1,153 @@
-<div class="home-wrapper">
-  <!-- FULL SCREEN HERO BANNER (100vh) -->
-  <section class="hero-fullscreen">
-    <div class="hero-bg-overlay"></div>
-
-    <!-- Hero Navigation Bar -->
-    <header class="hero-navbar">
-      <div class="brand">
-        <img src="/Smartlog.png" alt="SmartLog" class="brand-img" onerror="this.src='Smartlog.png';" />
-        <div class="brand-text">
-          <span class="title">SmartLog</span>
-          <span class="subtitle">Logística Inteligente</span>
-        </div>
-      </div>
-      <div class="nav-actions">
-        <a routerLink="/admin/dashboard" class="btn btn-orange">Acessar Painel ➔</a>
-      </div>
-    </header>
-
-    <!-- Hero Center Content -->
-    <div class="hero-center-content">
-      <div class="hero-chip">
-        <span>PLATAFORMA DE GESTÃO LOGÍSTICA</span>
-      </div>
-      <h1 class="hero-headline">
-        Do motorista à gestão: <span class="orange-text">a mesma entrega, a mesma informação.</span>
-      </h1>
-      <p class="hero-subheadline">
-        Organize entregas, acompanhe o andamento informado pelo motorista e consulte sua operação com um assistente logístico.
-      </p>
-
-      <div class="hero-actions">
-        <a routerLink="/admin/dashboard" class="btn btn-primary btn-lg">📊 Abrir Dashboard</a>
-        <a routerLink="/admin/entregas" class="btn btn-orange btn-lg">🚚 Gestão de Entregas</a>
-      </div>
+<div class="landing-page">
+  <a class="skip-link" appSectionLink="conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a routerLink="/home" class="brand-link" aria-label="SmartLog, página inicial"
+        ><app-brand
+      /></a>
+      <nav
+        id="site-navigation"
+        class="site-nav"
+        [class.is-open]="menuOpen()"
+        aria-label="Navegação principal"
+        (keydown.escape)="closeMenu()"
+      >
+        <a appSectionLink="plataforma" (click)="menuOpen.set(false)">Plataforma</a>
+        <a appSectionLink="como-funciona" (click)="menuOpen.set(false)">Como funciona</a>
+        <a appSectionLink="aplicativo" (click)="menuOpen.set(false)">Aplicativo</a>
+        <a appSectionLink="duvidas" (click)="menuOpen.set(false)">Dúvidas</a>
+        <a routerLink="/admin/dashboard" class="nav-mobile-access"
+          >Acessar o painel <app-icon name="arrow-right"
+        /></a>
+      </nav>
+      <a routerLink="/admin/dashboard" class="button button-navy header-access"
+        >Acessar o painel <app-icon name="arrow-up-right"
+      /></a>
+      <button
+        id="site-menu-toggle"
+        type="button"
+        class="mobile-menu-toggle"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="site-navigation"
+        [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'"
+        (click)="menuOpen.set(!menuOpen())"
+      >
+        <app-icon [name]="menuOpen() ? 'close' : 'menu'" />
+      </button>
     </div>
+  </header>
 
-    <!-- Scroll Indicator -->
-    <a href="#features-section" class="scroll-indicator" (click)="scrollToFeatures($event)">
-      <span>Rolar para ver mais</span>
-      <div class="scroll-arrow">↓</div>
-    </a>
-  </section>
+  <main id="conteudo" tabindex="-1">
+    <app-landing-hero />
 
-  <!-- SCROLLABLE CONTENT SECTION -->
-  <div id="features-section" class="home-content-container">
-    <!-- Features Grid -->
-    <section class="features-grid">
-      <div class="card feature-card">
-        <div class="feature-icon icon-blue">📊</div>
-        <h3>Dashboard Operacional</h3>
-        <p>Entregas pendentes, em rota e concluídas calculadas a partir dos registros da sua operação.</p>
-        <a routerLink="/admin/dashboard" class="feature-link">Ver Dashboard ➔</a>
+    <app-platform-preview />
+
+    <section
+      id="como-funciona"
+      class="workflow-section container section-space"
+      aria-labelledby="workflow-title"
+    >
+      <div class="workflow-intro">
+        <span class="section-kicker">Da organização à confirmação</span>
+        <h2 id="workflow-title">Um fluxo simples.<br />Uma equipe conectada.</h2>
+        <p>A informação acompanha a entrega e chega a quem precisa dela.</p>
+        <a appSectionLink="aplicativo" class="inline-link"
+          >Conheça o aplicativo <app-icon name="arrow-down"
+        /></a>
       </div>
+      <ol class="workflow-steps">
+        <li>
+          <span class="step-number">01</span>
+          <div>
+            <h3>Organize no painel.</h3>
+            <p>
+              Cadastre clientes, motoristas e veículos. Distribua entregas e associe cada uma à sua
+              rota.
+            </p>
+          </div>
+          <app-icon name="chart" />
+        </li>
+        <li>
+          <span class="step-number">02</span>
+          <div>
+            <h3>Coloque a operação na rua.</h3>
+            <p>
+              O motorista consulta suas entregas no aplicativo e registra o andamento de cada etapa.
+            </p>
+          </div>
+          <app-icon name="truck" />
+        </li>
+        <li>
+          <span class="step-number">03</span>
+          <div>
+            <h3>Acompanhe com clareza.</h3>
+            <p>
+              A gestão acompanha os registros no painel. O cliente consulta suas próprias entregas
+              no app.
+            </p>
+          </div>
+          <app-icon name="circle-check" />
+        </li>
+      </ol>
+    </section>
 
-      <div class="card feature-card">
-        <div class="feature-icon icon-orange">🚚</div>
-        <h3>Gestão de Entregas</h3>
-        <p>Localize uma entrega, confira o status e acompanhe as mudanças registradas no aplicativo.</p>
-        <a routerLink="/admin/entregas" class="feature-link">Gerenciar Entregas ➔</a>
+    <app-app-showcase />
+
+    <section id="duvidas" class="faq-section container section-space" aria-labelledby="faq-title">
+      <div class="faq-intro">
+        <span class="section-kicker">Vamos deixar tudo claro</span>
+        <h2 id="faq-title">Antes de seguir<br />viagem.</h2>
+        <p>O que você precisa saber sobre a plataforma.</p>
       </div>
-
-      <div class="card feature-card">
-        <div class="feature-icon icon-green">🗺️</div>
-        <h3>Rotas & Frotas</h3>
-        <p>Organização de rotas de distribuição e equipe de condutores cadastrados por empresa.</p>
-        <a routerLink="/admin/rotas" class="feature-link">Explorar Rotas ➔</a>
+      <div class="faq-list">
+        @for (item of questions; track item.question) {
+          <details>
+            <summary>
+              {{ item.question
+              }}<span class="faq-toggle" aria-hidden="true"><app-icon name="plus" /></span>
+            </summary>
+            <p>{{ item.answer }}</p>
+          </details>
+        }
       </div>
     </section>
 
-    <!-- Quick Stats Section -->
-    <section class="card stats-card" *ngIf="metrics()">
-      <div class="stats-header">
-        <h2>Indicadores Atuais da Operação</h2>
+    <section class="final-cta container" aria-labelledby="cta-title">
+      <div>
+        <span>Mais clareza em cada etapa.</span>
+        <h2 id="cta-title">Sua próxima entrega<br />começa com mais controle.</h2>
       </div>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-value">{{ metrics()?.totalEntregas }}</div>
-          <div class="stat-label">Total de Entregas</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value text-grey">{{ metrics()?.pendentes }}</div>
-          <div class="stat-label">Pendentes</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value text-orange">{{ metrics()?.emTransito }}</div>
-          <div class="stat-label">Em Rota</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value text-green">{{ metrics()?.entregues }}</div>
-          <div class="stat-label">Entregues</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value text-blue">{{ metrics()?.taxaSucesso }}%</div>
-          <div class="stat-label">Taxa de Conclusão</div>
-        </div>
-      </div>
+      <a routerLink="/admin/dashboard" class="button button-navy"
+        >Acessar o painel <app-icon name="arrow-up-right" /></a
+      ><svg class="cta-route" viewBox="0 0 500 240" fill="none" aria-hidden="true">
+        <path
+          d="M-30 220h230c140 0-70-160 70-160h250"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-dasharray="6 8"
+        />
+        <circle cx="270" cy="60" r="10" fill="currentColor" />
+      </svg>
     </section>
-  </div>
+  </main>
+
+  <footer class="site-footer container">
+    <div class="footer-main">
+      <a routerLink="/home" class="brand-link" aria-label="SmartLog, página inicial"
+        ><app-brand
+      /></a>
+      <p>Conectando quem planeja<br />a quem entrega.</p>
+      <nav aria-label="Navegação do rodapé">
+        <a appSectionLink="plataforma">Plataforma</a><a appSectionLink="aplicativo">Aplicativo</a
+        ><a appSectionLink="duvidas">Dúvidas</a
+        ><a routerLink="/admin/dashboard">Acessar painel <app-icon name="arrow-up-right" /></a>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© {{ year }} SmartLog. Logística inteligente.</span
+      ><span
+        >Da base à última entrega.<span class="footer-route-dot" aria-hidden="true"></span
+      ></span>
+    </div>
+  </footer>
 </div>

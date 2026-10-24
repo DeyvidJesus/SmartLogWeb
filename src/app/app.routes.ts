@@ -15,28 +15,35 @@ import { ClientesComponent } from './pages/clientes/clientes.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent },
+  { path: 'login', component: LoginComponent, title: 'Entrar no painel | SmartLog' },
+  { path: 'home', component: HomeComponent, title: 'SmartLog — Sua operação na direção certa' },
   {
     path: 'admin',
     component: AdminLayoutComponent,
-    canActivate: [async () => {
-      const auth = inject(AuthService);
-      const router = inject(Router);
-      if (!auth.isAuthenticated()) return router.createUrlTree(['/login']);
-      try { await auth.loadProfile(); return auth.isAdmin() || router.createUrlTree(['/login']); }
-      catch { auth.logout(); return router.createUrlTree(['/login']); }
-    }],
+    canActivate: [
+      async () => {
+        const auth = inject(AuthService);
+        const router = inject(Router);
+        if (!auth.isAuthenticated()) return router.createUrlTree(['/login']);
+        try {
+          await auth.loadProfile();
+          return auth.isAdmin() || router.createUrlTree(['/login']);
+        } catch {
+          auth.logout();
+          return router.createUrlTree(['/login']);
+        }
+      },
+    ],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'assistente', component: AssistenteComponent },
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'entregas', component: EntregasComponent },
-      { path: 'veiculos', component: VeiculosComponent },
-      { path: 'rotas', component: RotasComponent },
-      { path: 'motoristas', component: MotoristasComponent },
-      { path: 'clientes', component: ClientesComponent }
-    ]
+      { path: 'assistente', component: AssistenteComponent, title: 'Assistente IA | SmartLog' },
+      { path: 'dashboard', component: DashboardComponent, title: 'Visão da operação | SmartLog' },
+      { path: 'entregas', component: EntregasComponent, title: 'Entregas | SmartLog' },
+      { path: 'veiculos', component: VeiculosComponent, title: 'Frota e veículos | SmartLog' },
+      { path: 'rotas', component: RotasComponent, title: 'Rotas | SmartLog' },
+      { path: 'motoristas', component: MotoristasComponent, title: 'Motoristas | SmartLog' },
+      { path: 'clientes', component: ClientesComponent, title: 'Clientes | SmartLog' },
+    ],
   },
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'home' },
 ];

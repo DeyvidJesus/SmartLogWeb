@@ -1,0 +1,370 @@
+:host {
+  display: block;
+}
+
+.app-section {
+  background: var(--navy);
+  color: #fff;
+  overflow: hidden;
+}
+.app-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 80px;
+  min-height: 710px;
+  padding-block: 65px;
+}
+.app-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  isolation: isolate;
+}
+.app-orbit {
+  position: absolute;
+  border: 1px solid #ffffff10;
+  border-radius: 50%;
+  z-index: -1;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+}
+.orbit-one {
+  width: 430px;
+  height: 430px;
+}
+.orbit-two {
+  width: 590px;
+  height: 590px;
+}
+.phone-mockup {
+  width: 254px;
+  border: 5px solid #385169;
+  border-radius: 35px;
+  background: #f7f9fc;
+  box-shadow: 15px 25px 45px #081f364a;
+  color: var(--navy);
+  padding: 12px 13px 10px;
+  transform: rotate(-5deg);
+  position: relative;
+}
+.phone-status {
+  font-size: 8px;
+  font-weight: 750;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px 15px;
+}
+.phone-brand {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.phone-brand > app-icon {
+  color: #ed641d;
+  font-size: 20px;
+}
+.phone-user {
+  margin-left: auto;
+  background: #e6edf4;
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+}
+.phone-greeting {
+  padding: 22px 0 13px;
+  display: grid;
+  gap: 4px;
+}
+.phone-greeting > span {
+  font-size: 10px;
+  color: #536577;
+}
+.phone-greeting > strong {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+.phone-greeting .phone-date {
+  font-size: 8px;
+  color: #5c7080;
+}
+.phone-map {
+  height: 130px;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.phone-map app-route-illustration {
+  height: 100%;
+}
+.phone-delivery {
+  background: #fff;
+  border: 1px solid #e2e9ef;
+  border-radius: 9px;
+  margin-top: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 7px;
+}
+.phone-delivery-label {
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+.phone-delivery-label .status-label {
+  font-size: 7px;
+}
+.phone-delivery > strong {
+  font-size: 16px;
+}
+.phone-delivery > span:not(:first-child) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  color: #65798a;
+}
+.phone-delivery > span > app-icon {
+  font-size: 12px;
+}
+.phone-info-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-top: 1px solid #edf0f4;
+  padding-top: 10px;
+  margin-top: 3px;
+}
+.phone-info-row > app-icon:first-child {
+  color: #bd4b10;
+  background: #fff0e7;
+  padding: 7px;
+  box-sizing: content-box;
+  border-radius: 7px;
+  font-size: 15px;
+}
+.phone-info-row span {
+  font-size: 8px;
+  color: #647887;
+  line-height: 1.7;
+}
+.phone-info-row strong {
+  font-weight: 700;
+  color: var(--navy);
+}
+.phone-info-row > app-icon:last-child {
+  color: #18775b;
+  font-size: 17px;
+  margin-left: auto;
+}
+.phone-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  color: #8192a1;
+}
+.phone-navigation > app-icon {
+  font-size: 17px;
+}
+.phone-navigation > span {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: #ae4310;
+  font-size: 7px;
+}
+.phone-navigation span app-icon {
+  font-size: 17px;
+}
+.phone-handle {
+  display: block;
+  width: 65px;
+  height: 3px;
+  background: #c5d0d9;
+  border-radius: 3px;
+  margin: 15px auto 0;
+}
+.app-connection-note {
+  position: absolute;
+  right: -4px;
+  bottom: 90px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  color: var(--navy);
+  padding: 17px;
+  border-radius: 9px;
+  box-shadow: 0 8px 30px #061d3830;
+  transform: rotate(2deg);
+}
+.app-connection-note > span {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #e9f5ed;
+  color: #18775b;
+}
+.app-connection-note strong {
+  font-size: 11px;
+  line-height: 1.7;
+}
+.phone-caption {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: #b7c7d4;
+  font-size: 9px;
+}
+.app-copy .section-kicker {
+  color: #ffad7e;
+}
+.app-copy h2 {
+  font-size: 43px;
+  letter-spacing: -1.6px;
+}
+.app-copy > p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #c1ced8;
+  max-width: 380px;
+  margin-top: 22px;
+}
+.app-roles {
+  list-style: none;
+  display: grid;
+  gap: 21px;
+  margin: 29px 0 30px;
+}
+.app-roles > li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.app-roles > li > span {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ffffff1a;
+  border-radius: 9px;
+  color: #ffc199;
+}
+.app-roles h3 {
+  font-size: 13px;
+  font-weight: 650;
+  margin-bottom: 3px;
+}
+.app-roles p {
+  font-size: 11px;
+  color: #b1c1ce;
+}
+.app-footnote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  color: #b5c5d3;
+  margin-top: 17px;
+}
+.app-footnote app-icon {
+  font-size: 13px;
+}
+@media (max-width: 1100px) {
+  .app-inner {
+    gap: 45px;
+  }
+  .app-connection-note {
+    right: -15px;
+  }
+}
+@media (max-width: 900px) {
+  .app-inner {
+    gap: 35px;
+    min-height: 660px;
+  }
+  .app-copy h2 {
+    font-size: 35px;
+  }
+  .app-copy > p {
+    font-size: 12px;
+  }
+  .app-connection-note {
+    right: -10px;
+    bottom: 74px;
+    padding: 12px;
+    gap: 8px;
+  }
+  .app-connection-note strong {
+    font-size: 9px;
+  }
+  .app-connection-note > span {
+    width: 27px;
+    height: 27px;
+  }
+  .app-roles p {
+    font-size: 10px;
+  }
+}
+@media (max-width: 640px) {
+  .app-inner {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 66px;
+    padding-block: 58px 85px;
+  }
+  .app-copy {
+    width: 100%;
+  }
+  .app-copy h2 {
+    font-size: 34px;
+  }
+  .app-copy > p {
+    font-size: 12px;
+    max-width: 330px;
+  }
+  .app-roles {
+    gap: 19px;
+    margin-block: 25px;
+  }
+  .app-roles h3 {
+    font-size: 13px;
+  }
+  .app-roles p {
+    font-size: 11px;
+  }
+  .app-copy .button {
+    font-size: 12px;
+  }
+  .app-visual {
+    width: 100%;
+  }
+  .app-connection-note {
+    right: 0;
+    bottom: 78px;
+  }
+  .app-orbit.orbit-one {
+    width: 350px;
+    height: 350px;
+  }
+  .app-orbit.orbit-two {
+    width: 490px;
+    height: 490px;
+  }
+  .phone-caption {
+    font-size: 8px;
+  }
+}

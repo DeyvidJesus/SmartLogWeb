@@ -2,24 +2,28 @@
   <!-- Header da Torre de Controle -->
   <div class="page-header">
     <div>
-      <div class="control-tower-badge">TORRE DE CONTROLE ENTERPRISE</div>
-      <h1 class="page-title">Painel Operacional & Telemetria</h1>
-      <p class="page-subtitle">Dados compartilhados com o aplicativo. Atualização automática a cada 5 segundos.</p>
+      <div class="control-tower-badge">Sua operação, em movimento</div>
+      <h1 class="page-title">Visão da operação</h1>
+      <p class="page-subtitle">Entregas, equipe e rotas conectadas ao aplicativo.</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="carregarDados()" [disabled]="isLoading()">
         <span class="spinner spinner-dark" *ngIf="isLoading()"></span>
         <span *ngIf="!isLoading()"><app-icon name="refresh"></app-icon> Atualizar</span>
       </button>
-      <a routerLink="/admin/entregas" class="btn btn-orange">+ Nova Entrega</a>
+      <a routerLink="/admin/entregas" class="btn btn-orange"
+        ><app-icon name="plus" /> Nova entrega</a
+      >
     </div>
   </div>
 
-  <div class="card" role="alert" *ngIf="errorMessage()" style="padding:20px;color:#b91c1c">{{ errorMessage() }}</div>
+  <div class="card" role="alert" *ngIf="errorMessage()" style="padding: 20px; color: #b91c1c">
+    {{ errorMessage() }}
+  </div>
   <!-- Loading State -->
   <div class="card loading-card" *ngIf="isLoading()">
     <div class="spinner-lg"></div>
-    <p>Carregando telemetria e indicadores operacionais...</p>
+    <p>Carregando os dados da operação…</p>
   </div>
 
   <!-- Metrics Grid (Enterprise Supply Chain KPIs) -->
@@ -28,28 +32,36 @@
       <div class="kpi-icon icon-blue"><app-icon name="package"></app-icon></div>
       <div class="kpi-value">{{ metrics()?.totalEntregas }}</div>
       <div class="kpi-label">Total de Entregas</div>
-      <div class="kpi-sub">Pendentes: <strong>{{ metrics()?.pendentes }}</strong></div>
+      <div class="kpi-sub">
+        Pendentes: <strong>{{ metrics()?.pendentes }}</strong>
+      </div>
     </div>
 
     <div class="kpi-card card">
       <div class="kpi-icon icon-orange"><app-icon name="truck"></app-icon></div>
       <div class="kpi-value text-orange">{{ metrics()?.totalVeiculos }}</div>
-      <div class="kpi-label">Frotas / Veículos Ativos</div>
-      <div class="kpi-sub">Motoristas ativos: <strong>{{ metrics()?.totalMotoristas }}</strong></div>
+      <div class="kpi-label">Veículos ativos</div>
+      <div class="kpi-sub">
+        Motoristas ativos: <strong>{{ metrics()?.totalMotoristas }}</strong>
+      </div>
     </div>
 
     <div class="kpi-card card">
       <div class="kpi-icon icon-green"><app-icon name="target"></app-icon></div>
       <div class="kpi-value text-green">{{ metrics()?.taxaSucesso }}%</div>
       <div class="kpi-label">Entregas concluídas</div>
-      <div class="kpi-sub">Em rota: <strong>{{ metrics()?.emTransito }}</strong></div>
+      <div class="kpi-sub">
+        Em rota: <strong>{{ metrics()?.emTransito }}</strong>
+      </div>
     </div>
 
     <div class="kpi-card card">
       <div class="kpi-icon icon-purple"><app-icon name="users"></app-icon></div>
       <div class="kpi-value">{{ metrics()?.totalClientes }}</div>
       <div class="kpi-label">Clientes cadastrados</div>
-      <div class="kpi-sub">Rotas Operando: <strong>{{ metrics()?.totalRotas }}</strong></div>
+      <div class="kpi-sub">
+        Rotas cadastradas: <strong>{{ metrics()?.totalRotas }}</strong>
+      </div>
     </div>
   </div>
 
@@ -60,12 +72,21 @@
       <div class="map-card-header">
         <div class="map-title-wrap">
           <span class="pulse-dot"></span>
-          <h2 class="map-title">Localização informada pelo aplicativo</h2>
+          <h2 class="map-title">Sua equipe no mapa</h2>
         </div>
-        <span class="live-pill">CONSULTA A CADA 5 S</span>
+        <span class="live-pill">Consulta a cada 5 s</span>
       </div>
-      <div id="operational-map" class="map-container"></div>
-      <p class="text-dim" style="padding:12px">O mapa mostra o último GPS recebido de cada rota. Sem envio do motorista, não há posição disponível.</p>
+      <div id="operational-map" class="map-container" [hidden]="!hasGps()"></div>
+      @if (!hasGps()) {
+        <div class="map-empty" role="status">
+          <span><app-icon name="map-pin" /></span><strong>Aguardando a primeira localização</strong>
+          <p>As posições aparecem quando o motorista envia o GPS pelo aplicativo.</p>
+        </div>
+      }
+      <p class="text-dim" style="padding: 12px">
+        O mapa mostra o último GPS recebido de cada rota. Sem envio do motorista, não há posição
+        disponível.
+      </p>
     </div>
 
     <!-- CENTRAL DE ALERTAS OPERACIONAIS -->
@@ -76,11 +97,19 @@
       </div>
 
       <div class="alerts-list">
-        <div *ngFor="let alerta of metrics()?.alertas"
-             class="alert-item"
-             [class.alert-critico]="alerta.tipo === 'CRITICO'"
-             [class.alert-aviso]="alerta.tipo === 'ALERTA'"
-             [class.alert-info]="alerta.tipo === 'INFO'">
+        @if (!metrics()?.alertas?.length) {
+          <div class="alerts-empty">
+            <app-icon name="shield-check" /><strong>Nenhum alerta nesta consulta</strong>
+            <p>As entregas em andamento têm motorista atribuído.</p>
+          </div>
+        }
+        <div
+          *ngFor="let alerta of metrics()?.alertas"
+          class="alert-item"
+          [class.alert-critico]="alerta.tipo === 'CRITICO'"
+          [class.alert-aviso]="alerta.tipo === 'ALERTA'"
+          [class.alert-info]="alerta.tipo === 'INFO'"
+        >
           <div class="alert-top">
             <span class="alert-item-title">{{ alerta.titulo }}</span>
             <span class="alert-time">{{ alerta.tempo }}</span>
@@ -100,7 +129,10 @@
       </div>
       <div class="status-box-val">{{ metrics()?.pendentes }}</div>
       <div class="status-box-bar">
-        <div class="progress-bar bar-grey" [style.width.%]="getPercentual(metrics()?.pendentes || 0, metrics()?.totalEntregas || 1)"></div>
+        <div
+          class="progress-bar bar-grey"
+          [style.width.%]="getPercentual(metrics()?.pendentes || 0, metrics()?.totalEntregas || 1)"
+        ></div>
       </div>
     </div>
 
@@ -111,7 +143,10 @@
       </div>
       <div class="status-box-val text-orange">{{ metrics()?.emTransito }}</div>
       <div class="status-box-bar">
-        <div class="progress-bar bar-orange" [style.width.%]="getPercentual(metrics()?.emTransito || 0, metrics()?.totalEntregas || 1)"></div>
+        <div
+          class="progress-bar bar-orange"
+          [style.width.%]="getPercentual(metrics()?.emTransito || 0, metrics()?.totalEntregas || 1)"
+        ></div>
       </div>
     </div>
 
@@ -122,7 +157,10 @@
       </div>
       <div class="status-box-val text-green">{{ metrics()?.entregues }}</div>
       <div class="status-box-bar">
-        <div class="progress-bar bar-green" [style.width.%]="getPercentual(metrics()?.entregues || 0, metrics()?.totalEntregas || 1)"></div>
+        <div
+          class="progress-bar bar-green"
+          [style.width.%]="getPercentual(metrics()?.entregues || 0, metrics()?.totalEntregas || 1)"
+        ></div>
       </div>
     </div>
 
@@ -142,10 +180,12 @@
   <div class="card recent-deliveries-card" *ngIf="!isLoading() && metrics()">
     <div class="section-card-header">
       <div class="section-title-wrap">
-        <h2 class="section-title">Últimas Entregas Atualizadas</h2>
+        <h2 class="section-title">Últimas atualizações</h2>
         <span class="section-badge">{{ entregasRecentes().length }} registros</span>
       </div>
-      <a routerLink="/admin/entregas" class="btn btn-secondary btn-sm">Ver Todas ➔</a>
+      <a routerLink="/admin/entregas" class="btn btn-secondary btn-sm"
+        >Ver entregas <app-icon name="arrow-right"
+      /></a>
     </div>
 
     <div class="table-responsive" *ngIf="entregasRecentes().length > 0">
@@ -157,14 +197,16 @@
             <th>DESTINO</th>
             <th>STATUS</th>
             <th>DATA</th>
-            <th style="text-align: right;">AÇÃO</th>
+            <th style="text-align: right">AÇÃO</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let e of entregasRecentes()"
-              class="table-row clickable-row"
-              (click)="abrirModalDetalhes(e)"
-              title="Clique para ver detalhes completos da entrega">
+          <tr
+            *ngFor="let e of entregasRecentes()"
+            class="table-row clickable-row"
+            (click)="abrirModalDetalhes(e)"
+            title="Clique para ver detalhes completos da entrega"
+          >
             <td class="font-mono font-bold">{{ e.codigo }}</td>
             <td>{{ e.origem }}</td>
             <td>{{ e.destino }}</td>
@@ -174,10 +216,10 @@
                 {{ getStatusLabel(e.status) }}
               </span>
             </td>
-            <td class="text-dim">{{ e.atualizadaEm | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td style="text-align: right;" (click)="$event.stopPropagation()">
+            <td class="text-dim">{{ e.atualizadaEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td style="text-align: right" (click)="$event.stopPropagation()">
               <button class="btn btn-outline btn-xs" (click)="abrirModalDetalhes(e)">
-                👁 Detalhes
+                Detalhes <app-icon name="arrow-up-right" />
               </button>
             </td>
           </tr>
@@ -187,12 +229,14 @@
   </div>
 
   <!-- MODAL DETALHES DA ENTREGA -->
-  <div class="modal-overlay" *ngIf="showModalDetalhes && entregaSelecionada" (click)="fecharModalDetalhes()">
+  <div
+    class="modal-overlay"
+    *ngIf="showModalDetalhes && entregaSelecionada"
+    (click)="fecharModalDetalhes()"
+  >
     <div class="modal-dialog" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3 class="modal-title">
-          <span>📋</span> Detalhes da Entrega
-        </h3>
+        <h3 class="modal-title"><span>📋</span> Detalhes da Entrega</h3>
         <button class="modal-close-btn" (click)="fecharModalDetalhes()">×</button>
       </div>
 
@@ -205,7 +249,7 @@
 
           <div class="detail-item">
             <span class="detail-label">STATUS ATUAL</span>
-            <div style="margin-top: 4px;">
+            <div style="margin-top: 4px">
               <span class="badge" [ngClass]="getStatusClass(entregaSelecionada.status)">
                 <span class="badge-dot"></span>
                 {{ getStatusLabel(entregaSelecionada.status) }}
@@ -215,7 +259,7 @@
 
           <div class="detail-item">
             <span class="detail-label">IDENTIFICADOR (ID)</span>
-            <span class="detail-val" style="font-size: 0.8125rem;">{{ entregaSelecionada.id }}</span>
+            <span class="detail-val" style="font-size: 0.8125rem">{{ entregaSelecionada.id }}</span>
           </div>
 
           <div class="detail-item">
@@ -245,18 +289,24 @@
 
           <div class="detail-item">
             <span class="detail-label">DATA DE CRIAÇÃO</span>
-            <span class="detail-val">{{ entregaSelecionada.criadaEm | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+            <span class="detail-val">{{
+              entregaSelecionada.criadaEm | date: 'dd/MM/yyyy HH:mm:ss'
+            }}</span>
           </div>
 
           <div class="detail-item">
             <span class="detail-label">ÚLTIMA ATUALIZAÇÃO</span>
-            <span class="detail-val">{{ entregaSelecionada.atualizadaEm | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+            <span class="detail-val">{{
+              entregaSelecionada.atualizadaEm | date: 'dd/MM/yyyy HH:mm:ss'
+            }}</span>
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="fecharModalDetalhes()">Fechar</button>
+        <button type="button" class="btn btn-secondary" (click)="fecharModalDetalhes()">
+          Fechar
+        </button>
       </div>
     </div>
   </div>

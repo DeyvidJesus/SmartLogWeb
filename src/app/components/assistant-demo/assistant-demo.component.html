@@ -1,0 +1,42 @@
+<div class="assistant-preview">
+  <div class="assistant-intro">
+    <span class="assistant-symbol"><app-icon name="spark" /></span>
+    <h3>Pergunte à sua operação.</h3>
+    <p>Consulte entregas com o contexto que seu perfil pode acessar.</p>
+    <span class="assistant-example">Experimente uma pergunta de exemplo</span>
+    <div class="sample-prompts">
+      <button
+        type="button"
+        [attr.aria-pressed]="sampleQuestion() === 'status'"
+        (click)="sampleQuestion.set('status')"
+      >
+        Como está a ENT-001?</button
+      ><button
+        type="button"
+        [attr.aria-pressed]="sampleQuestion() === 'rotas'"
+        (click)="sampleQuestion.set('rotas')"
+      >
+        Quais entregas estão em rota?
+      </button>
+    </div>
+  </div>
+  <div class="sample-chat" aria-live="polite" aria-atomic="true">
+    <span class="chat-person">Você</span>
+    <div class="sample-user-message">
+      {{ sampleQuestion() === 'status' ? 'Como está a ENT-001?' : 'Quais entregas estão em rota?' }}
+    </div>
+    <span class="chat-person assistant-chat-brand"
+      ><app-icon name="spark" /> Assistente SmartLog</span
+    >
+    <div class="sample-ai-message">
+      @if (sampleQuestion() === 'status') {
+        A entrega <strong>ENT-001</strong> está <strong>em rota</strong>, com saída registrada em
+        São Paulo, SP.
+      } @else {
+        Neste exemplo, <strong>ENT-001</strong> e <strong>ENT-002</strong> estão
+        <strong>em rota</strong>. A ENT-003 já foi entregue em Campinas, SP.
+      }
+      <span><app-icon name="shield-check" /> Resposta ilustrativa, sem consulta à IA.</span>
+    </div>
+  </div>
+</div>

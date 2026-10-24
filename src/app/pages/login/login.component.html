@@ -1,0 +1,64 @@
+<main class="login-page">
+  <section class="login-story" aria-labelledby="login-story-title">
+    <a routerLink="/home" class="story-brand" aria-label="SmartLog, página inicial"
+      ><app-brand
+    /></a>
+    <div class="story-copy">
+      <span>Da base à última entrega</span>
+      <h2 id="login-story-title">A operação<br />continua daqui.</h2>
+      <p>Pessoas, rotas e entregas.<br />Todos na mesma direção.</p>
+    </div>
+    <img
+      src="/images/smartlog-on-the-road.webp"
+      width="1536"
+      height="1024"
+      alt="Caminhão laranja em uma estrada entre montanhas"
+    />
+  </section>
+  <div class="login-form-side">
+    <a routerLink="/home" class="back-home"
+      ><app-icon name="arrow-right" /> Voltar à página inicial</a
+    >
+    <form class="login-form" (ngSubmit)="entrar()" [attr.aria-busy]="busy()">
+      <span class="login-symbol"><app-icon name="shield-check" /></span>
+      <h1>Acesse sua operação.</h1>
+      <p>Use a mesma conta administradora do aplicativo para entrar no painel.</p>
+      <div class="login-field">
+        <label for="email">E-mail</label
+        ><input
+          id="email"
+          name="email"
+          type="email"
+          class="form-control"
+          [(ngModel)]="email"
+          autocomplete="username"
+          spellcheck="false"
+          placeholder="voce@empresa.com.br"
+          required
+        />
+      </div>
+      <div class="login-field">
+        <label for="password">Senha</label
+        ><input
+          id="password"
+          name="password"
+          type="password"
+          class="form-control"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+      <p role="alert" *ngIf="error()" class="error">{{ error() }}</p>
+      <button type="submit" class="login-submit" [disabled]="busy()">
+        <span *ngIf="busy()" class="spinner" aria-hidden="true"></span
+        >{{ busy() ? 'Entrando…' : 'Entrar no painel'
+        }}<app-icon *ngIf="!busy()" name="arrow-up-right" />
+      </button>
+      <span class="login-access-note"
+        ><app-icon name="shield-check" /> Acesso exclusivo aos dados da sua empresa.</span
+      >
+    </form>
+    <span class="login-footer" translate="no">SmartLog — Logística inteligente.</span>
+  </div>
+</main>

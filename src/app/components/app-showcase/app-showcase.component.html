@@ -1,0 +1,75 @@
+<section id="aplicativo" class="app-section" aria-labelledby="app-title">
+  <div class="container app-inner">
+    <div class="app-visual">
+      <span class="app-orbit orbit-one" aria-hidden="true"></span
+      ><span class="app-orbit orbit-two" aria-hidden="true"></span>
+      <div class="phone-mockup" aria-label="Prévia ilustrativa do aplicativo do motorista">
+        <div class="phone-status" aria-hidden="true">
+          <span>9:41</span><span>▮▮▮ &nbsp; ▰</span>
+        </div>
+        <div class="phone-brand">
+          <app-icon name="truck" /><span translate="no">SmartLog</span
+          ><span class="phone-user">AL</span>
+        </div>
+        <div class="phone-greeting">
+          <span>Olá, Ana!</span><strong>Vamos para a próxima?</strong
+          ><span class="phone-date">Sua rota de exemplo</span>
+        </div>
+        <div class="phone-map"><app-route-illustration /></div>
+        <div class="phone-delivery">
+          <span class="phone-delivery-label"
+            >Entrega em andamento <span class="status-label orange">Em rota</span></span
+          ><strong>ENT-002</strong><span><app-icon name="map-pin" /> Jundiaí, SP</span>
+          <div class="phone-info-row">
+            <app-icon name="package" /><span
+              >Informação da rua<br /><strong>conectada à gestão.</strong></span
+            ><app-icon name="check" />
+          </div>
+        </div>
+        <div class="phone-navigation" aria-hidden="true">
+          <app-icon name="home" /><span><app-icon name="package" /> Entregas</span
+          ><app-icon name="spark" /><app-icon name="user" />
+        </div>
+        <span class="phone-handle" aria-hidden="true"></span>
+      </div>
+      <div class="app-connection-note">
+        <span><app-icon name="refresh" /></span
+        ><strong>O mesmo status.<br />Na rua e na gestão.</strong>
+      </div>
+      <small class="phone-caption">Representação ilustrativa do aplicativo.</small>
+    </div>
+    <div class="app-copy">
+      <span class="section-kicker">A operação não fica na mesa</span>
+      <h2 id="app-title">Seu time em campo.<br />Você por dentro.</h2>
+      <p>Com o SmartLog no Android, cada perfil tem acesso ao que precisa para fazer sua parte.</p>
+      <ul class="app-roles">
+        <li>
+          <span><app-icon name="chart" /></span>
+          <div>
+            <h3>Para quem gerencia</h3>
+            <p>Indicadores, cadastros e visão da operação.</p>
+          </div>
+        </li>
+        <li>
+          <span><app-icon name="truck" /></span>
+          <div>
+            <h3>Para quem entrega</h3>
+            <p>Rotas atribuídas, status e envio de localização.</p>
+          </div>
+        </li>
+        <li>
+          <span><app-icon name="package" /></span>
+          <div>
+            <h3>Para quem espera</h3>
+            <p>Acompanhamento das próprias entregas.</p>
+          </div>
+        </li>
+      </ul>
+      <a routerLink="/admin/dashboard" class="button button-white"
+        >Conectar minha operação <app-icon name="arrow-up-right" /></a
+      ><span class="app-footnote"
+        ><app-icon name="shield-check" /> Cada empresa e perfil com seu próprio acesso.</span
+      >
+    </div>
+  </div>
+</section>

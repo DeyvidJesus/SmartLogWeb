@@ -1,8 +1,11 @@
-<div class="admin-wrapper">
-  <app-header></app-header>
+<div class="admin-wrapper" (keydown.escape)="closeMenu()">
+  <a class="admin-skip-link" href="#admin-content">Pular para o conteúdo</a>
+  <app-header [menuOpen]="menuOpen()" (menuToggle)="menuOpen.set(!menuOpen())"></app-header>
   <div class="admin-body">
-    <app-sidebar></app-sidebar>
-    <main class="admin-content">
+    <div id="admin-navigation" class="sidebar-slot" [class.is-open]="menuOpen()">
+      <app-sidebar></app-sidebar>
+    </div>
+    <main id="admin-content" class="admin-content" tabindex="-1">
       <router-outlet></router-outlet>
     </main>
   </div>

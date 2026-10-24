@@ -1,65 +1,85 @@
 <aside class="sidebar">
-  <div class="sidebar-menu">
+  <nav class="sidebar-menu" aria-label="Navegação do painel">
     <div class="menu-section">
-      <div class="section-heading">TORRE DE CONTROLE</div>
+      <span class="section-heading">Visão geral</span>
       <ul class="nav-list">
         <li>
-          <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
-            <span class="nav-icon"><app-icon name="home"></app-icon></span>
-            <span class="nav-label">Visão Geral</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon"><app-icon name="chart"></app-icon></span>
-            <span class="nav-label">Dashboard & Mapa</span>
-          </a>
+          <a
+            routerLink="/admin/dashboard"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-item"
+            ><app-icon name="chart" /><span>Dashboard e mapa</span></a
+          >
         </li>
       </ul>
     </div>
-
     <div class="menu-section">
-      <div class="section-heading">OPERAÇÕES DE LOGÍSTICA</div>
-      <a routerLink="/admin/assistente" routerLinkActive="active" class="nav-item"><span class="nav-icon"><app-icon name="spark"></app-icon></span><span class="nav-label">Assistente IA</span></a>
+      <span class="section-heading">Operação</span>
       <ul class="nav-list">
         <li>
-          <a routerLink="/admin/entregas" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon"><app-icon name="truck"></app-icon></span>
-            <span class="nav-label">Entregas</span>
-          </a>
+          <a
+            routerLink="/admin/entregas"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-item"
+            ><app-icon name="package" /><span>Entregas</span></a
+          >
         </li>
         <li>
-          <a routerLink="/admin/veiculos" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon"><app-icon name="truck"></app-icon></span>
-            <span class="nav-label">Frotas & Veículos</span>
-          </a>
+          <a
+            routerLink="/admin/rotas"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-item"
+            ><app-icon name="map" /><span>Rotas</span></a
+          >
         </li>
         <li>
-          <a routerLink="/admin/rotas" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon"><app-icon name="map"></app-icon></span>
-            <span class="nav-label">Rotas</span>
-          </a>
+          <a
+            routerLink="/admin/veiculos"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-item"
+            ><app-icon name="truck" /><span>Frota e veículos</span></a
+          >
         </li>
         <li>
-          <a routerLink="/admin/motoristas" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon"><app-icon name="user"></app-icon></span>
-            <span class="nav-label">Motoristas</span>
-          </a>
+          <a
+            routerLink="/admin/motoristas"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-item"
+            ><app-icon name="user" /><span>Motoristas</span></a
+          >
         </li>
         <li>
-          <a routerLink="/admin/clientes" routerLinkActive="active" class="nav-item">
-            <span class="nav-icon"><app-icon name="building"></app-icon></span>
-            <span class="nav-label">Clientes</span>
-          </a>
+          <a
+            routerLink="/admin/clientes"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-item"
+            ><app-icon name="building" /><span>Clientes</span></a
+          >
         </li>
       </ul>
     </div>
-  </div>
-
+    <div class="menu-section">
+      <span class="section-heading">Inteligência</span
+      ><a
+        routerLink="/admin/assistente"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        class="nav-item assistant-link"
+        ><app-icon name="spark" /><span>Assistente IA</span><span class="ai-label">IA</span></a
+      >
+    </div>
+  </nav>
   <div class="sidebar-footer">
-    <div class="brand-footer-card">
-      <div class="footer-title">SmartLog Enterprise</div>
-      <div class="footer-subtitle">Smart Res</div>
+    <div class="connected-note">
+      <app-icon name="shield-check" />
+      <div><strong>Uma operação conectada</strong><span>Painel + aplicativo</span></div>
     </div>
+    <a routerLink="/home" class="home-link"><app-icon name="arrow-up-right" /> Página inicial</a>
   </div>
 </aside>
