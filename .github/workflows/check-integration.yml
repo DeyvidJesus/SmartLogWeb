@@ -1,4 +1,4 @@
-name: Check production integration
+name: Check production integration and deployment
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: smartlog-production-diagnosis
@@ -32,6 +33,13 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci --prefix SmartLogAPI/netlify
+      - name: Read last production artifact for comparison
+        uses: actions/download-artifact@v4
+        with:
+          name: smartlog-production
+          run-id: 40114233146
+          github-token: ${{ github.token }}
+          path: SmartLogWeb/dist/SmartLogWeb/browser
       - name: Check live routing, Firebase identities and Gemini
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
