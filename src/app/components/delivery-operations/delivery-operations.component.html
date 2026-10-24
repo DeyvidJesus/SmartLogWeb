@@ -1,0 +1,120 @@
+<section class="operations" aria-label="Pós-entrega e acompanhamento">
+  <p class="error" role="alert" *ngIf="error()">{{ error() }}</p>
+  <p role="status" *ngIf="message()">{{ message() }}</p>
+  <div class="heading">
+    <h3>Ocorrências da entrega</h3>
+    <button class="btn btn-outline" type="button" (click)="refresh()" [disabled]="busy()">
+      Atualizar
+    </button>
+  </div>
+  <p *ngIf="loading()" role="status">Consultando a central…</p>
+  <p *ngIf="!loading() && !occurrences().length">Nenhuma ocorrência registrada.</p>
+  <button class="occurrence" type="button" *ngFor="let row of occurrences()" (click)="inspect(row)">
+    <span
+      ><strong>{{ types[row.tipo] || row.tipo }}</strong
+      ><br />{{ row.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</span
+    >
+    <span class="state" [class.resolved]="row.status === 'RESOLVIDA'">{{
+      row.status === 'ABERTA' ? 'Requer ação' : 'Resolvida'
+    }}</span>
+  </button>
+  <article class="case" *ngIf="selected as row">
+    <h4>{{ types[row.tipo] || row.tipo }}</h4>
+    <p>{{ row.descricao }}</p>
+    <p>Registrado por {{ row.responsavel }}</p>
+    <p *ngIf="row.volumesRecebidos">
+      Volumes recebidos nesta tentativa: {{ row.volumesRecebidos }}
+    </p>
+    <img *ngIf="row.foto" [src]="row.foto" alt="Foto anexada à ocorrência" class="evidence" />
+    <form *ngIf="row.status === 'ABERTA'" (ngSubmit)="resolve()">
+      <label for="resolution">Ação tomada pelo gestor</label>
+      <textarea
+        id="resolution"
+        name="resolution"
+        [(ngModel)]="resolution"
+        required
+        maxlength="1500"
+        rows="3"
+        class="form-control"
+      ></textarea>
+      <label for="customer-message">Mensagem que o cliente verá</label>
+      <textarea
+        id="customer-message"
+        name="customerMessage"
+        [(ngModel)]="customerMessage"
+        required
+        maxlength="300"
+        rows="2"
+        class="form-control"
+      ></textarea>
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="busy() || !resolution.trim() || !customerMessage.trim()"
+      >
+        {{ busy() ? 'Salvando…' : 'Resolver ocorrência' }}
+      </button>
+    </form>
+    <div *ngIf="row.status === 'RESOLVIDA'">
+      <p><strong>Resolução:</strong> {{ row.resolucao }}</p>
+      <p>{{ row.resolvidaEm | date: 'dd/MM/yyyy HH:mm' }} · {{ row.resolvidaPor }}</p>
+      <p>Mensagem ao cliente: {{ row.mensagemCliente }}</p>
+    </div>
+  </article>
+  <section class="case" *ngIf="receipt() as proof">
+    <div class="heading">
+      <h3>Comprovante digital</h3>
+      <button type="button" class="btn btn-outline" (click)="printReceipt()">Imprimir / PDF</button>
+    </div>
+    <p>
+      <strong>{{ proof.recebedor }}</strong> · {{ proof.em | date: 'dd/MM/yyyy HH:mm:ss' }}
+    </p>
+    <p>{{ proof.volumesRecebidos }} volumes · Confirmado por {{ proof.responsavel }}</p>
+    <p>
+      Local registrado: {{ proof.latitude }}, {{ proof.longitude }} · Precisão:
+      {{ proof.precisao | number: '1.0-0' }} m
+    </p>
+    <p *ngIf="proof.observacao">{{ proof.observacao }}</p>
+    <div class="photos">
+      <img
+        *ngFor="let photo of proof.fotos; let i = index"
+        [src]="photo"
+        [alt]="'Foto da entrega ' + (i + 1)"
+      />
+    </div>
+    <p>Assinatura do recebedor</p>
+    <img
+      *ngIf="proof.assinatura"
+      [src]="proof.assinatura"
+      alt="Assinatura coletada no recebimento"
+      class="signature"
+    />
+  </section>
+  <section class="case">
+    <h3>Acompanhamento do cliente</h3>
+    <p>
+      O link dá acesso ao status, às mensagens de ocorrências e ao comprovante desta entrega. Válido
+      por 7 dias. Gerar outro link invalida o anterior.
+    </p>
+    <div class="heading">
+      <button type="button" class="btn btn-primary" (click)="share()" [disabled]="busy()">
+        Gerar link
+      </button>
+      <button type="button" class="btn btn-outline" (click)="revoke()" [disabled]="busy()">
+        Revogar links
+      </button>
+    </div>
+    <div *ngIf="shareUrl">
+      <label for="tracking-link">Copie o link para compartilhar</label>
+      <input
+        id="tracking-link"
+        class="form-control"
+        readonly
+        [value]="shareUrl"
+        (focus)="$any($event.target).select()"
+      />
+      <a [href]="shareUrl" target="_blank" rel="noopener noreferrer">Abrir acompanhamento</a>
+      <p>Válido até {{ expires | date: 'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+  </section>
+</section>

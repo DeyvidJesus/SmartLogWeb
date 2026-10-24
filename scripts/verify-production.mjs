@@ -35,3 +35,9 @@ assert.equal(api.status, 200, 'Public API metadata unavailable');
 assert.match(api.headers.get('content-type') ?? '', /application\/json/);
 await api.json();
 console.log('Verified API metadata');
+
+const tracking = await fetch(`${origin}/api/v1/rastreamento/invalid-link`, {
+  signal: AbortSignal.timeout(30_000),
+});
+assert.equal(tracking.status, 404, 'Tracking API must reject an invalid public link with 404');
+console.log('Verified public tracking API rejects invalid links');

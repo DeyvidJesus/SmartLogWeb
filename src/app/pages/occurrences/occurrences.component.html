@@ -1,0 +1,34 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Central de ocorrências</h1>
+    <p class="page-subtitle">
+      {{ pending }} em aberto · Atualizações do aplicativo a cada 15 segundos.
+    </p>
+  </div>
+</div>
+<p role="alert" class="error" *ngIf="error()">{{ error() }}</p>
+<label for="occurrence-filter">Exibir</label
+><select id="occurrence-filter" [(ngModel)]="filter" class="form-control">
+  <option value="ABERTA">Em aberto</option>
+  <option value="RESOLVIDA">Resolvidas</option>
+  <option value="TODAS">Todas</option>
+</select>
+<p role="status" *ngIf="loading()">Consultando a central…</p>
+<p *ngIf="!loading() && !filtered.length" class="empty">Nenhuma ocorrência neste filtro.</p>
+<div class="layout">
+  <section aria-label="Lista de ocorrências">
+    <button type="button" class="case" *ngFor="let row of filtered" (click)="select(row)">
+      <span class="code">{{ row.codigo }}</span
+      ><strong>{{ types[row.tipo] || row.tipo }}</strong
+      ><span>{{ row.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</span>
+      <span>{{ row.status === 'ABERTA' ? 'Requer ação' : 'Resolvida' }}</span>
+    </button>
+  </section>
+  <section class="detail" *ngIf="selectedId">
+    <h2>Detalhes e resolução</h2>
+    <app-delivery-operations
+      [deliveryId]="selectedId"
+      [hasReceipt]="hasReceipt"
+    ></app-delivery-operations>
+  </section>
+</div>

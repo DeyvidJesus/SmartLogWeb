@@ -333,6 +333,7 @@
         </div>
       </div>
 
+      <app-delivery-operations style="display:block;padding:0 24px 24px" [deliveryId]="entregaSelecionada.id" [hasReceipt]="!!entregaSelecionada.comprovanteDisponivel"></app-delivery-operations>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="fecharModalDetalhes()">Fechar</button>
       </div>

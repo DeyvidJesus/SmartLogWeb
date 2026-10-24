@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/SmartLogAPI
-          ref: 2a4e0f990cd07397428db10a663804a3ae70a725
+          ref: f5411a392d0e7bf5e802401dd3f16dc60e5df477
           path: SmartLogAPI
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/Smartlog
-          ref: d498f36d55432bfd8fa362adad908d0dbb1c8956
+          ref: e23c8a3967823a9d3402b6c4da317403c5bca874
           path: Smartlog
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
@@ -72,6 +72,25 @@ jobs:
           npm ci
           npm test -- --watch=false
           npm run build
+
+      - name: Validate API contracts
+        working-directory: SmartLogAPI/netlify
+        run: |
+          npm ci
+          npm test
+
+      - name: Validate Flutter to API integration
+        run: |
+          node SmartLogAPI/netlify/test/support/experience-server.mjs > "$RUNNER_TEMP/smartlog-integration.log" 2>&1 &
+          fixture_pid=$!
+          trap 'kill "$fixture_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4300/api/v1 > /dev/null; then break; fi
+            sleep 1
+          done
+          cd Smartlog
+          flutter pub get --enforce-lockfile
+          flutter test test/delivery_http_flow_test.dart --dart-define=SMARTLOG_INTEGRATION=true --dart-define=API_BASE_URL=http://127.0.0.1:4300/api/v1
 
       - name: Validate and build Android app
         working-directory: Smartlog
@@ -109,7 +128,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: DeyvidJesus/SmartLogAPI
-          ref: 2a4e0f990cd07397428db10a663804a3ae70a725
+          ref: f5411a392d0e7bf5e802401dd3f16dc60e5df477
           path: SmartLogAPI
           token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
 
