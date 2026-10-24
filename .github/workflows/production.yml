@@ -1,0 +1,141 @@
+name: Validate and publish SmartLog
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smartlog-production-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout web
+        uses: actions/checkout@v4
+        with:
+          path: SmartLogWeb
+
+      - name: Checkout API
+        uses: actions/checkout@v4
+        with:
+          repository: DeyvidJesus/SmartLogAPI
+          ref: 2a4e0f990cd07397428db10a663804a3ae70a725
+          path: SmartLogAPI
+          token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
+
+      - name: Checkout app
+        uses: actions/checkout@v4
+        with:
+          repository: DeyvidJesus/Smartlog
+          ref: d498f36d55432bfd8fa362adad908d0dbb1c8956
+          path: Smartlog
+          token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            SmartLogWeb/package-lock.json
+            SmartLogAPI/netlify/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+
+      - name: Validate and build web
+        working-directory: SmartLogWeb
+        env:
+          NG_CLI_ANALYTICS: 'false'
+        run: |
+          npm ci
+          npm test -- --watch=false
+          npm run build
+
+      - name: Validate and build Android app
+        working-directory: Smartlog
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter test
+          flutter build apk --release --target-platform android-arm64 --dart-define=API_BASE_URL=https://smartlog-next-2026.netlify.app/api/v1
+
+      - name: Include APK in site
+        run: |
+          mkdir -p SmartLogWeb/dist/SmartLogWeb/browser/downloads
+          cp Smartlog/build/app/outputs/flutter-apk/app-release.apk SmartLogWeb/dist/SmartLogWeb/browser/downloads/smartlog-arm64.apk
+
+      - name: Save deploy artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smartlog-production
+          path: SmartLogWeb/dist/SmartLogWeb/browser
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://smartlog-next-2026.netlify.app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: SmartLogWeb
+
+      - uses: actions/checkout@v4
+        with:
+          repository: DeyvidJesus/SmartLogAPI
+          ref: 2a4e0f990cd07397428db10a663804a3ae70a725
+          path: SmartLogAPI
+          token: ${{ secrets.SMARTLOG_REPOSITORY_TOKEN || github.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: smartlog-production
+          path: SmartLogWeb/dist/SmartLogWeb/browser
+
+      - name: Check deployment credentials
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo '::error::Configure NETLIFY_AUTH_TOKEN in the production environment or repository secrets.'
+            exit 1
+          fi
+
+      - name: Publish site, API and APK
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: 2e4e6ab4-bb98-4100-80db-4a074a4ecb66
+        run: |
+          npm --prefix SmartLogAPI/netlify ci
+          cp SmartLogWeb/netlify.production.toml netlify.toml
+          npx --yes netlify-cli@27.14.2 deploy --prod --no-build --site "$NETLIFY_SITE_ID" --message "SmartLog ${GITHUB_SHA}"
+
+      - name: Verify published application
+        run: node SmartLogWeb/scripts/verify-production.mjs
